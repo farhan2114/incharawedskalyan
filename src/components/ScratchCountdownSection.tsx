@@ -25,6 +25,9 @@ export const ScratchCountdownSection: React.FC = () => {
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
   const strokeCounterRef = useRef<number>(0);
   const lastCheckTimeRef = useRef<number>(0);
+  const hasRevealedRef = useRef<boolean>(false);
+  const isScratchingRef = useRef<boolean>(false);
+  const prevWidthRef = useRef<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
 
   // 1. Live Countdown ticker to the wedding date
   useEffect(() => {
@@ -96,6 +99,7 @@ export const ScratchCountdownSection: React.FC = () => {
 
   // 3. Initialize / Paint the Scratch Card Canvas
   const initCanvas = useCallback(() => {
+    if (hasRevealedRef.current) return;
     const canvas = canvasRef.current;
     const timerCard = timerCardRef.current;
     if (!canvas || !timerCard) return;
@@ -173,19 +177,39 @@ export const ScratchCountdownSection: React.FC = () => {
     strokeCounterRef.current = 0;
   }, []);
 
+  // Check stored reveal state and handle mobile-friendly resize
   useEffect(() => {
+    try {
+      if (localStorage.getItem('inchara_kalyan_countdown_revealed') === 'true') {
+        hasRevealedRef.current = true;
+        setIsRevealed(true);
+        setScratchProgress(100);
+        return;
+      }
+    } catch {}
+
     const timer = setTimeout(initCanvas, 150);
-    window.addEventListener('resize', initCanvas);
+
+    // On mobile browsers, scrolling hides/shows the address bar and fires resize.
+    // We only re-init if the screen WIDTH actually changed (e.g. device rotation).
+    const handleResize = () => {
+      if (hasRevealedRef.current) return;
+      if (Math.abs(window.innerWidth - prevWidthRef.current) < 25) return;
+      prevWidthRef.current = window.innerWidth;
+      initCanvas();
+    };
+
+    window.addEventListener('resize', handleResize);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener('resize', initCanvas);
+      window.removeEventListener('resize', handleResize);
     };
   }, [initCanvas]);
 
   // Calculate percentage of canvas cleared
   const checkScratchPercentage = () => {
     const canvas = canvasRef.current;
-    if (!canvas || isRevealed) return;
+    if (!canvas || hasRevealedRef.current) return;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
@@ -215,24 +239,29 @@ export const ScratchCountdownSection: React.FC = () => {
     const pct = Math.round((transparentCount / totalSamples) * 100);
     setScratchProgress(pct);
 
-    if (pct >= 28 && !isRevealed) {
+    if (pct >= 28 && !hasRevealedRef.current) {
+      hasRevealedRef.current = true;
       setIsRevealed(true);
+      try {
+        localStorage.setItem('inchara_kalyan_countdown_revealed', 'true');
+      } catch {}
       triggerCenterConfetti();
     }
   };
 
-  // Ultra-Smooth Scratch Drawing Function with Continuous Interpolation
+  // Ultra-Smooth Scratch Drawing Function with Continuous Sub-Pixel Interpolation
   const scratchAt = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
-    if (!canvas || isRevealed) return;
+    if (!canvas || hasRevealedRef.current) return;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const currentX = (clientX - rect.left) * dpr;
-    const currentY = (clientY - rect.top) * dpr;
-    const brushRadius = 32 * dpr;
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const currentX = (clientX - rect.left) * scaleX;
+    const currentY = (clientY - rect.top) * scaleY;
+    const brushRadius = 36 * (window.devicePixelRatio || 1);
 
     ctx.globalCompositeOperation = 'destination-out';
     ctx.lineWidth = brushRadius * 2;
@@ -244,8 +273,8 @@ export const ScratchCountdownSection: React.FC = () => {
       const prevY = lastPointRef.current.y;
       const dist = Math.hypot(currentX - prevX, currentY - prevY);
 
-      // Fine-grained interpolation so rapid swiping produces a seamless ribbon
-      const step = 4 * dpr;
+      // Fine-grained interpolation so rapid swiping produces a seamless continuous ribbon
+      const step = 4 * (window.devicePixelRatio || 1);
       if (dist > step) {
         const steps = Math.ceil(dist / step);
         for (let i = 1; i <= steps; i++) {
@@ -269,53 +298,93 @@ export const ScratchCountdownSection: React.FC = () => {
 
     lastPointRef.current = { x: currentX, y: currentY };
 
-    // Throttle percentage checks to once every 320ms to keep 60fps/120fps fluid response
+    // Throttle percentage checks to once every 300ms to preserve fluid 60fps/120fps response
     const now = performance.now();
-    if (now - lastCheckTimeRef.current > 320) {
+    if (now - lastCheckTimeRef.current > 300) {
       lastCheckTimeRef.current = now;
       checkScratchPercentage();
     }
   };
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (isRevealed) return;
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {}
+  // Direct Non-Passive Native Touch Listeners on Canvas (Prevents scroll cancellation on mobile)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (hasRevealedRef.current || e.touches.length === 0) return;
+      e.preventDefault();
+      isScratchingRef.current = true;
+      lastPointRef.current = null;
+      scratchAt(e.touches[0].clientX, e.touches[0].clientY);
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (!isScratchingRef.current || hasRevealedRef.current || e.touches.length === 0) return;
+      e.preventDefault();
+      scratchAt(e.touches[0].clientX, e.touches[0].clientY);
+    };
+
+    const onTouchEnd = () => {
+      if (!isScratchingRef.current) return;
+      isScratchingRef.current = false;
+      lastPointRef.current = null;
+      checkScratchPercentage();
+    };
+
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas.addEventListener('touchend', onTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', onTouchEnd, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', onTouchStart);
+      canvas.removeEventListener('touchmove', onTouchMove);
+      canvas.removeEventListener('touchend', onTouchEnd);
+      canvas.removeEventListener('touchcancel', onTouchEnd);
+    };
+  }, []);
+
+  // Desktop Mouse Handlers
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (hasRevealedRef.current) return;
     setIsScratching(true);
     lastPointRef.current = null;
     scratchAt(e.clientX, e.clientY);
   };
 
-  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!isScratching || isRevealed) return;
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isScratching || hasRevealedRef.current) return;
     scratchAt(e.clientX, e.clientY);
   };
 
-  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
+  const handleMouseUp = () => {
     if (!isScratching) return;
-    try {
-      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
-        e.currentTarget.releasePointerCapture(e.pointerId);
-      }
-    } catch {}
     setIsScratching(false);
     lastPointRef.current = null;
     checkScratchPercentage();
   };
 
-  const handlePointerCancel = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    handlePointerUp(e);
-  };
-
   const handleManualReveal = () => {
+    hasRevealedRef.current = true;
     setIsRevealed(true);
     setScratchProgress(100);
+    try {
+      localStorage.setItem('inchara_kalyan_countdown_revealed', 'true');
+    } catch {}
     triggerCenterConfetti();
   };
 
   const handleReset = () => {
-    initCanvas();
+    hasRevealedRef.current = false;
+    isScratchingRef.current = false;
+    lastPointRef.current = null;
+    try {
+      localStorage.removeItem('inchara_kalyan_countdown_revealed');
+    } catch {}
+    setIsRevealed(false);
+    setScratchProgress(0);
+    setTimeout(initCanvas, 50);
   };
 
   const timeUnits = [
@@ -384,10 +453,10 @@ export const ScratchCountdownSection: React.FC = () => {
 
           <canvas
             ref={canvasRef}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerCancel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
             style={{ touchAction: 'none' }}
             className={`absolute inset-0 z-20 cursor-grab rounded-2xl touch-none select-none transition-opacity duration-700 active:cursor-grabbing ${
               isRevealed ? 'pointer-events-none opacity-0' : 'opacity-100 shadow-xl'
