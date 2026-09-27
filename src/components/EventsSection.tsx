@@ -160,18 +160,36 @@ export const EventsSection: React.FC = () => {
                     className={`absolute inset-0 bg-gradient-to-r ${theme.gradientOverlay} pointer-events-none z-10 transition-opacity duration-300`}
                   />
 
-                  {/* Corner Mandala Outlines on the Border matching reference image */}
+                  {/* Tiny Gold Flower Outlines along the Border (No Background) */}
                   <img
-                    src="/assets/gold-mandala-corner.png"
+                    src="/assets/gold-flower-outline.png"
                     alt=""
                     aria-hidden="true"
-                    className="pointer-events-none absolute top-0 left-0 w-24 xs:w-28 sm:w-44 h-auto opacity-30 select-none object-contain z-10"
+                    className="pointer-events-none absolute top-2.5 left-2.5 sm:top-4 sm:left-4 w-5 h-5 sm:w-7 sm:h-7 opacity-75 sm:opacity-85 select-none object-contain z-20 rotate-[-15deg] drop-shadow-sm"
                   />
                   <img
-                    src="/assets/gold-mandala-corner.png"
+                    src="/assets/gold-flower-outline.png"
                     alt=""
                     aria-hidden="true"
-                    className="pointer-events-none absolute bottom-0 left-0 w-24 xs:w-28 sm:w-44 h-auto opacity-30 select-none object-contain -scale-y-100 z-10"
+                    className="pointer-events-none absolute bottom-2.5 left-2.5 sm:bottom-4 sm:left-4 w-5 h-5 sm:w-7 sm:h-7 opacity-75 sm:opacity-85 select-none object-contain z-20 rotate-[25deg] drop-shadow-sm"
+                  />
+                  <img
+                    src="/assets/gold-flower-outline.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-2 left-20 xs:left-24 sm:left-44 w-4 h-4 sm:w-5 sm:h-5 opacity-60 sm:opacity-70 select-none object-contain z-20 rotate-[35deg]"
+                  />
+                  <img
+                    src="/assets/gold-flower-outline.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute bottom-2 left-20 xs:left-24 sm:left-44 w-4 h-4 sm:w-5 sm:h-5 opacity-60 sm:opacity-70 select-none object-contain z-20 rotate-[-30deg]"
+                  />
+                  <img
+                    src="/assets/gold-flower-outline.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute bottom-2.5 right-2.5 sm:bottom-4 sm:right-4 w-5 h-5 sm:w-7 sm:h-7 opacity-60 sm:opacity-75 select-none object-contain z-20 rotate-[10deg] drop-shadow-sm"
                   />
 
                   {/* Inner Golden Outline Frame */}
