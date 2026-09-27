@@ -58,7 +58,7 @@ export const EventsSection: React.FC = () => {
         </RevealOnScroll>
 
         <div className="relative mt-14 pb-[2vh]">
-          {weddingData.events.map((event, idx) => (
+          {weddingData.events.slice(0, 3).map((event, idx) => (
             <div
               key={event.name}
               className="event-card sticky top-[14vh] mb-[8vh] origin-top will-change-transform"

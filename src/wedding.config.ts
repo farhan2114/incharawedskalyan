@@ -21,28 +21,29 @@ export const weddingConfig = {
   // 1. COUPLE & PARENTS INFORMATION
   // -------------------------------------------------------------
   couple: {
-    bride: 'Inchara',
-    groom: 'Kalyan',
+    bride: 'Inchara N Shetty',
+    groom: 'Kalyan Kumar Reddy',
     hashtag: '#IncharaWedsKalyan',
 
     brideRole: 'The bride',
-    brideParentsNote: 'Daughter of Mr. & Mrs. [Parents Name], [City].',
+    brideParentsNote: 'Daughter of Sri Naveen Kumar & Smt. Mallika (Late).',
     bridePhoto: '/client-images/bride.jpg',
-    bridePhotoAlt: 'Inchara, the bride',
+    bridePhotoAlt: 'Inchara N Shetty, the bride',
 
     groomRole: 'The groom',
-    groomParentsNote: 'Son of Mr. & Mrs. [Parents Name], [City].',
+    groomParentsNote: 'Son of Sri Devireddy Gangireddy & Smt. Nagalakshmi.',
     groomPhoto: '/client-images/groom.jpg',
-    groomPhotoAlt: 'Kalyan, the groom',
+    groomPhotoAlt: 'Kalyan Kumar Reddy, the groom',
   },
 
   // -------------------------------------------------------------
   // 2. DATES & CEREMONY TIME
   // -------------------------------------------------------------
   date: {
-    label: 'Sunday, 14 February 2027',
-    short: '14 . 02 . 2027',
-    muhurtham: 'Muhurtham at 9:45 AM',
+    label: 'Friday, 30 October 2026',
+    short: '30 . 10 . 2026',
+    muhurtham: 'Muhurtham at 10:00 AM',
+    targetIso: '2026-10-30T10:00:00+05:30',
   },
 
   // -------------------------------------------------------------
@@ -62,17 +63,17 @@ the union of two hearts`,
   // 4. VENUE & GOOGLE MAPS LOCATION
   // -------------------------------------------------------------
   venue: {
-    name: 'Sri Kalyana Mandapam',
-    city: 'Madurai, Tamil Nadu',
-    cityName: 'Madurai', // Shows in "Join us in [City]"
-    locationUnderMap: 'Madurai · Tamil Nadu · 22 . 11 . 2026', // Text displayed directly under the map frame
-    description: 'Follow the golden path to Sri Kalyana Mandapam, where our families will be waiting to welcome you.',
+    name: 'ANASUYA - Where Celebrations Meet the Shore',
+    city: 'Kapu, Karnataka',
+    cityName: 'Kapu', // Shows in "Join us in [City]"
+    locationUnderMap: 'Kapu · Karnataka · 30 . 10 . 2026', // Text displayed directly under the map frame
+    description: 'Follow the coastal road to ANASUYA, where celebrations meet the shore and our families will be waiting to welcome you.',
     
     // Direct link when clicking "Open in maps" (leave empty to auto-generate from venue + city)
-    mapsSearchUrl: 'https://www.google.com/maps/search/Sri%20Kalyana%20Mandapam%20Madurai%2C%20Tamil%20Nadu',
+    mapsSearchUrl: 'https://maps.app.goo.gl/pbMTxqMfVejvqKmq8',
     
     // Interactive Google Maps iframe URL
-    mapsEmbedUrl: 'https://www.google.com/maps?q=Sri%20Kalyana%20Mandapam%20Madurai%2C%20Tamil%20Nadu&output=embed',
+    mapsEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3884.186157662472!2d74.74074567542118!3d13.213626257529466!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbcb100573b99c7%3A0x1711fa25cb9e72a8!2sANASUYA%20-%20where%20celebrations%20meet%20the%20shore!5e0!3m2!1sen!2sin!4v1790508398407!5m2!1sen!2sin',
   },
 
   // -------------------------------------------------------------
@@ -90,87 +91,43 @@ the union of two hearts`,
   gallery: [
     {
       image: '/client-images/gallery-1.jpg',
-      alt: 'The couple walking through a temple corridor',
+      alt: 'Moments of celebration',
     },
     {
       image: '/client-images/gallery-2.jpg',
-      alt: 'The couple laughing together',
-    },
-    {
-      image: '/client-images/gallery-3.jpg',
-      alt: 'Hands with mehndi holding a jasmine garland',
-    },
-    {
-      image: '/client-images/gallery-4.jpg',
-      alt: 'The couple under a flower-decorated mandapam at dusk',
+      alt: 'Together in joy',
     },
   ],
 
   // -------------------------------------------------------------
   // 7. OUR STORY (MILESTONES)
   // -------------------------------------------------------------
-  story: [
-    {
-      year: '2019',
-      title: 'A crowded train',
-      text: 'One shared seat from Chennai to Madurai, and a conversation that never really ended.',
-      image: '/client-images/story-1.jpg',
-      alt: 'Two cups of coffee beside a train window',
-    },
-    {
-      year: '2022',
-      title: 'Two cities',
-      text: 'Long calls, longer letters, and a promise to meet halfway every single month.',
-      image: '/client-images/story-2.jpg',
-      alt: 'Handwritten letters tied with a maroon ribbon',
-    },
-    {
-      year: '2026',
-      title: 'The question',
-      text: 'Asked on a terrace under jasmine lights, answered before the sentence finished.',
-      image: '/client-images/story-3.jpg',
-      alt: 'A jasmine-decorated terrace at dusk',
-    },
-    {
-      year: '2027',
-      title: 'The day',
-      text: 'Surrounded by jasmine, bells, and everyone who brought us to this moment.',
-      image: '/client-images/story-4.jpg',
-      alt: 'Traditional wedding details',
-    },
-  ],
+  story: [],
 
   // -------------------------------------------------------------
-  // 8. ORDER OF CELEBRATIONS / EVENTS
+  // 8. ORDER OF CELEBRATIONS / EVENTS (First 3 events, no reception)
   // -------------------------------------------------------------
   events: [
     {
       name: 'Nichayathartham',
-      day: 'Friday, 12 Feb',
+      day: 'Thursday, 29 Oct',
       time: '6:00 PM',
-      place: 'Family Home, Madurai',
+      place: 'Family Home, Kapu',
       note: 'Engagement, followed by dinner',
     },
     {
       name: 'Mehndi & Sangeet',
-      day: 'Saturday, 13 Feb',
-      time: '4:00 PM',
-      place: 'Mandapam Lawns',
+      day: 'Thursday, 29 Oct',
+      time: '8:00 PM',
+      place: 'Celebration Lawns, Kapu',
       note: 'Henna, music and a lot of dancing',
     },
     {
       name: 'Muhurtham',
-      day: 'Sunday, 14 Feb',
-      time: '9:45 AM',
-      place: 'Sri Kalyana Mandapam',
-      note: 'The wedding ceremony',
-    },
-    {
-      name: 'Reception',
-      day: 'Sunday, 14 Feb',
-      time: '7:00 PM',
-      place: 'Mandapam Hall',
-      note: 'Dinner and celebrations',
+      day: 'Friday, 30 Oct',
+      time: '10:00 AM',
+      place: 'ANASUYA, Kapu',
+      note: 'The auspicious wedding ceremony',
     },
   ],
 
