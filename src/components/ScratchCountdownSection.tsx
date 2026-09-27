@@ -106,17 +106,18 @@ export const ScratchCountdownSection: React.FC = () => {
 
     const rect = timerCard.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    const width = Math.max(rect.width, 300);
-    const height = Math.max(rect.height, 180);
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
 
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
+    ctx.save();
     ctx.scale(dpr, dpr);
 
     // Luxurious gold shimmer gradient background
@@ -170,6 +171,8 @@ export const ScratchCountdownSection: React.FC = () => {
     ctx.font = 'italic 12px "Karla", system-ui, sans-serif';
     ctx.fillStyle = 'rgba(60, 10, 18, 0.75)';
     ctx.fillText('Drag or swipe with finger / mouse', width / 2, centerY + 32);
+
+    ctx.restore();
 
     setIsRevealed(false);
     setScratchProgress(0);
