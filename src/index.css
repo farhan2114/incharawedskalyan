@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 0.25rem;
+  --background: oklch(97.3% 0.014 88);
+  --foreground: oklch(31% 0.055 32);
+  --paper: oklch(98.5% 0.01 92);
+  --ink: oklch(31% 0.055 32);
+  --card: oklch(98.5% 0.01 92);
+  --card-foreground: oklch(31% 0.055 32);
+  --popover: oklch(98.5% 0.01 92);
+  --popover-foreground: oklch(31% 0.055 32);
+  --primary: oklch(63% 0.115 74);
+  --primary-foreground: oklch(98.5% 0.01 92);
+  --gold: oklch(74% 0.12 82);
+  --gold-deep: oklch(55% 0.1 66);
+  --secondary: oklch(94% 0.025 88);
+  --secondary-foreground: oklch(31% 0.055 32);
+  --muted: oklch(94.5% 0.018 88);
+  --muted-foreground: oklch(50% 0.035 46);
+  --accent: oklch(42% 0.14 26);
+  --accent-foreground: oklch(98.5% 0.01 92);
+  --maroon: oklch(42% 0.14 26);
+  --palm: oklch(45% 0.07 145);
+  --destructive: oklch(55% 0.2 27);
+  --destructive-foreground: oklch(98.5% 0.01 92);
+  --border: oklch(88% 0.03 82);
+  --input: oklch(88% 0.03 82);
+  --ring: oklch(74% 0.12 82);
+  --gradient-gold: linear-gradient(100deg, var(--gold-deep), var(--gold), oklch(90% 0.07 92), var(--gold-deep));
+  --gradient-veil: linear-gradient(180deg, var(--background), var(--background));
+  --shadow-card: 0 24px 60px -28px var(--maroon);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: 'Karla', ui-sans-serif, system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+.paper-card {
+  background-color: var(--paper);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--gold);
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .paper-card {
+    border: 1px solid color-mix(in oklab, var(--gold) 35%, transparent);
+  }
+}
+
+.arch-top {
+  border-top-left-radius: 999px 320px;
+  border-top-right-radius: 999px 320px;
+}
+
+.text-gold-foil {
+  background-image: var(--gradient-gold);
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.animate-foil {
+  background-size: 200%;
+  animation: 6s linear infinite shimmer-sweep;
+}
+
+.rule-gold {
+  background-image: linear-gradient(90deg, transparent, var(--gold), transparent);
+  height: 1px;
+}
+@supports (color: color-mix(in lab, red, red)) {
+  .rule-gold {
+    background-image: linear-gradient(90deg, transparent, color-mix(in oklab, var(--gold) 80%, transparent), transparent);
+  }
+}
+
+.eyebrow {
+  font-family: 'Karla', ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  font-size: 0.7rem;
+}
+
+.doors-locked,
+body.doors-locked {
+  overscroll-behavior: none;
+  height: 100% !important;
+  max-height: 100svh !important;
+  overflow: hidden !important;
+}
+
+body.doors-locked {
+  touch-action: none;
+  width: 100%;
+  position: fixed;
+  inset: 0;
+}
+
+html.doors-locked {
+  scrollbar-gutter: stable;
+}
+
+@keyframes spin-soft {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-soft-reverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-soft {
+  animation: 26s linear infinite spin-soft !important;
+  transform-origin: 50% 50% !important;
+  display: block;
+}
+
+.animate-spin-soft-reverse {
+  animation: 32s linear infinite spin-soft-reverse !important;
+  transform-origin: 50% 50% !important;
+  display: block;
+}
+
