@@ -24,6 +24,7 @@ export const ScratchCountdownSection: React.FC = () => {
 
   const lastPointRef = useRef<{ x: number; y: number } | null>(null);
   const strokeCounterRef = useRef<number>(0);
+  const lastCheckTimeRef = useRef<number>(0);
 
   // 1. Live Countdown ticker to the wedding date
   useEffect(() => {
@@ -188,8 +189,8 @@ export const ScratchCountdownSection: React.FC = () => {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
-    const sampleCols = 30;
-    const sampleRows = 20;
+    const sampleCols = 24;
+    const sampleRows = 16;
     const stepX = canvas.width / sampleCols;
     const stepY = canvas.height / sampleRows;
 
@@ -214,13 +215,13 @@ export const ScratchCountdownSection: React.FC = () => {
     const pct = Math.round((transparentCount / totalSamples) * 100);
     setScratchProgress(pct);
 
-    if (pct >= 35 && !isRevealed) {
+    if (pct >= 28 && !isRevealed) {
       setIsRevealed(true);
       triggerCenterConfetti();
     }
   };
 
-  // Scratch Drawing Function
+  // Ultra-Smooth Scratch Drawing Function with Continuous Interpolation
   const scratchAt = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas || isRevealed) return;
@@ -231,64 +232,80 @@ export const ScratchCountdownSection: React.FC = () => {
     const dpr = window.devicePixelRatio || 1;
     const currentX = (clientX - rect.left) * dpr;
     const currentY = (clientY - rect.top) * dpr;
+    const brushRadius = 32 * dpr;
 
     ctx.globalCompositeOperation = 'destination-out';
-    ctx.lineWidth = 55 * dpr;
+    ctx.lineWidth = brushRadius * 2;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
     if (lastPointRef.current) {
+      const prevX = lastPointRef.current.x;
+      const prevY = lastPointRef.current.y;
+      const dist = Math.hypot(currentX - prevX, currentY - prevY);
+
+      // Fine-grained interpolation so rapid swiping produces a seamless ribbon
+      const step = 4 * dpr;
+      if (dist > step) {
+        const steps = Math.ceil(dist / step);
+        for (let i = 1; i <= steps; i++) {
+          const ix = prevX + ((currentX - prevX) * i) / steps;
+          const iy = prevY + ((currentY - prevY) * i) / steps;
+          ctx.beginPath();
+          ctx.arc(ix, iy, brushRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
       ctx.beginPath();
-      ctx.moveTo(lastPointRef.current.x, lastPointRef.current.y);
+      ctx.moveTo(prevX, prevY);
       ctx.lineTo(currentX, currentY);
       ctx.stroke();
     } else {
       ctx.beginPath();
-      ctx.arc(currentX, currentY, (55 * dpr) / 2, 0, Math.PI * 2);
+      ctx.arc(currentX, currentY, brushRadius, 0, Math.PI * 2);
       ctx.fill();
     }
 
     lastPointRef.current = { x: currentX, y: currentY };
 
-    strokeCounterRef.current += 1;
-    if (strokeCounterRef.current % 6 === 0) {
+    // Throttle percentage checks to once every 320ms to keep 60fps/120fps fluid response
+    const now = performance.now();
+    if (now - lastCheckTimeRef.current > 320) {
+      lastCheckTimeRef.current = now;
       checkScratchPercentage();
     }
   };
 
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (isRevealed) return;
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {}
     setIsScratching(true);
     lastPointRef.current = null;
     scratchAt(e.clientX, e.clientY);
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isScratching || isRevealed) return;
+    scratchAt(e.clientX, e.clientY);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isScratching) return;
-    scratchAt(e.clientX, e.clientY);
-  };
-
-  const handleMouseUp = () => {
+    try {
+      if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+        e.currentTarget.releasePointerCapture(e.pointerId);
+      }
+    } catch {}
     setIsScratching(false);
     lastPointRef.current = null;
     checkScratchPercentage();
   };
 
-  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (e.touches.length === 0) return;
-    setIsScratching(true);
-    lastPointRef.current = null;
-    scratchAt(e.touches[0].clientX, e.touches[0].clientY);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isScratching || e.touches.length === 0) return;
-    scratchAt(e.touches[0].clientX, e.touches[0].clientY);
-  };
-
-  const handleTouchEnd = () => {
-    setIsScratching(false);
-    lastPointRef.current = null;
-    checkScratchPercentage();
+  const handlePointerCancel = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    handlePointerUp(e);
   };
 
   const handleManualReveal = () => {
@@ -367,13 +384,11 @@ export const ScratchCountdownSection: React.FC = () => {
 
           <canvas
             ref={canvasRef}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
+            style={{ touchAction: 'none' }}
             className={`absolute inset-0 z-20 cursor-grab rounded-2xl touch-none select-none transition-opacity duration-700 active:cursor-grabbing ${
               isRevealed ? 'pointer-events-none opacity-0' : 'opacity-100 shadow-xl'
             }`}

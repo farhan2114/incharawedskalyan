@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { weddingConfig } from '../wedding.config';
 import { RevealOnScroll } from './RevealOnScroll';
 import { SpinningMandala } from './Ornaments';
@@ -150,17 +150,25 @@ export const EventsSection: React.FC = () => {
                   {/* Inner Golden Outline Frame */}
                   <div className="pointer-events-none absolute inset-2.5 sm:inset-3.5 rounded-[22px] sm:rounded-[30px] border border-[#D4AF37]/50 z-10" />
 
-                  {/* Translucent Soft White Card Pod on Left (Slightly white contrast for traditional text) */}
-                  <div className="relative z-20 flex h-full items-center p-4 sm:p-7 md:p-10">
-                    <div className="flex flex-col items-center justify-center rounded-[24px] sm:rounded-[30px] bg-white/75 sm:bg-white/70 backdrop-blur-md border border-white/80 px-6 py-6 sm:px-10 sm:py-9 text-center shadow-[0_8px_32px_rgba(0,0,0,0.12)] max-w-[270px] sm:max-w-[330px] md:max-w-[360px] w-full transition-transform duration-300 group-hover:scale-[1.02]">
+                  {/* Translucent Soft White Card Pod on Left with Auspicious Gold Mandala Outline */}
+                  <div className="relative z-20 flex h-full items-center p-3.5 sm:p-7 md:p-10">
+                    <div className="relative overflow-hidden flex flex-col items-center justify-center rounded-[24px] sm:rounded-[30px] bg-white/92 sm:bg-white/88 backdrop-blur-lg border-2 border-white/95 px-6 py-6 sm:px-10 sm:py-8 text-center shadow-[0_12px_36px_rgba(0,0,0,0.18)] max-w-[270px] sm:max-w-[330px] md:max-w-[360px] w-full transition-transform duration-300 group-hover:scale-[1.02]">
+                      {/* Auspicious Gold Mandala Outline Watermark */}
+                      <img
+                        src="/assets/gold-mandala-outline.png"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-0 m-auto h-[250px] w-[250px] sm:h-[300px] sm:w-[300px] opacity-30 sm:opacity-35 object-contain select-none animate-spin-soft"
+                      />
+
                       {/* Top Traditional Motif Icon */}
-                      <div className="mb-2 sm:mb-2.5 transition-transform duration-300 group-hover:scale-110">
+                      <div className="relative z-10 mb-1.5 sm:mb-2 transition-transform duration-300 group-hover:scale-110">
                         {theme.topIcon}
                       </div>
 
                       {/* Traditional Stylish Title */}
                       <h3
-                        className={`font-traditional italic font-bold text-4xl sm:text-5xl md:text-6xl tracking-tight ${theme.titleColor} drop-shadow-sm`}
+                        className={`relative z-10 font-traditional italic font-bold text-4xl sm:text-5xl md:text-6xl tracking-tight ${theme.titleColor} drop-shadow-sm`}
                       >
                         {event.name}
                       </h3>
@@ -169,7 +177,7 @@ export const EventsSection: React.FC = () => {
                       <img
                         src="/assets/gold-flourish.png"
                         alt="Auspicious Tilak Flourish"
-                        className="w-36 sm:w-48 h-auto scale-y-[-1] object-contain drop-shadow-sm my-2 sm:my-3"
+                        className="relative z-10 w-36 sm:w-48 h-auto scale-y-[-1] object-contain drop-shadow-sm my-2 sm:my-2.5"
                       />
 
                       {/* Golden-Bordered Circular Arrow Button */}
@@ -180,15 +188,16 @@ export const EventsSection: React.FC = () => {
                           setActiveModalEvent(event);
                         }}
                         aria-label={`View details for ${event.name}`}
-                        className={`mt-1 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2.5px] ${theme.btnRing} shadow-[0_4px_16px_rgba(0,0,0,0.25)] ring-2 ring-gold/70 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold active:scale-95`}
+                        className={`relative z-10 mt-1 flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2.5px] ${theme.btnRing} shadow-[0_4px_16px_rgba(0,0,0,0.25)] ring-2 ring-gold/70 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold active:scale-95`}
                       >
                         <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:translate-x-0.5" />
                       </button>
                     </div>
                   </div>
 
-                  {/* Corner Accent Date Badge */}
-                  <div className="absolute right-4 top-4 z-20 rounded-full bg-black/55 px-3.5 py-1.5 font-serif text-[11px] sm:text-xs uppercase tracking-wider text-paper/95 backdrop-blur-md border border-gold/40 shadow-md">
+                  {/* Corner Accent Date Badge - High Visibility Ivory & Gold */}
+                  <div className="absolute right-3.5 top-3.5 sm:right-5 sm:top-5 z-20 flex items-center gap-1.5 rounded-full bg-white/95 px-3.5 py-1.5 sm:px-4 sm:py-2 font-serif text-[11px] sm:text-xs uppercase tracking-widest text-[#3A0810] font-bold backdrop-blur-md border-2 border-[#D4AF37] shadow-[0_4px_16px_rgba(0,0,0,0.25)]">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#D4AF37]" />
                     {event.day}
                   </div>
                 </div>
