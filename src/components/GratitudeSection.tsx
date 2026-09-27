@@ -6,7 +6,7 @@ import { RevealOnScroll } from './RevealOnScroll';
 
 export const GratitudeSection: React.FC = () => {
   return (
-    <section className="relative overflow-hidden px-5 py-24 sm:py-32">
+    <section className="relative overflow-hidden px-5 py-12 sm:py-16">
       <SpinningMandala reverse className="-left-24 bottom-4 w-56 sm:w-80" />
       <Ornament variant="gold" className="-left-10 top-10 w-36 rotate-6 sm:w-52" />
       <Ornament variant="gold" className="-right-8 bottom-10 w-32 -rotate-12 sm:w-48" />

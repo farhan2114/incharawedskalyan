@@ -34,7 +34,7 @@ const PersonCard: React.FC<PersonCardProps> = ({ name, role, note, src, alt, del
 
 export const MeetCoupleSection: React.FC = () => {
   return (
-    <section id="couple" className="relative overflow-hidden px-5 py-24 sm:py-32">
+    <section id="couple" className="relative overflow-hidden px-5 py-12 sm:py-16">
       <SpinningMandala className="-right-24 bottom-10 w-56 sm:w-72" />
       <Ornament className="-left-8 top-10 w-36 sm:w-52" />
       <Ornament variant="small" className="right-2 top-1/3 w-24 rotate-45 sm:w-32" />
@@ -46,7 +46,7 @@ export const MeetCoupleSection: React.FC = () => {
           <div className="rule-gold mx-auto mt-8 w-32" />
         </RevealOnScroll>
 
-        <div className="mt-16 grid gap-14 sm:grid-cols-2 sm:gap-10">
+        <div className="mt-10 grid gap-10 sm:grid-cols-2">
           <PersonCard
             name={weddingConfig.couple.bride}
             role={weddingConfig.couple.brideRole}

@@ -6,7 +6,7 @@ import { RevealOnScroll } from './RevealOnScroll';
 
 export const GallerySection: React.FC = () => {
   return (
-    <section id="gallery" className="relative overflow-hidden px-5 py-24 sm:py-32">
+    <section id="gallery" className="relative overflow-hidden px-5 py-12 sm:py-16">
       <SpinningMandala reverse className="-right-20 top-1/3 w-48 sm:w-64" />
       <Ornament className="-left-10 top-16 w-40 rotate-12 sm:w-56" />
       <Ornament variant="small" className="-right-6 bottom-10 w-28 -rotate-12 sm:w-40" />
@@ -19,7 +19,7 @@ export const GallerySection: React.FC = () => {
           <div className="rule-gold mx-auto mt-8 w-32" />
         </RevealOnScroll>
 
-        <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 max-w-4xl mx-auto">
+        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 max-w-4xl mx-auto">
           <div>
             <figure className="group relative aspect-[4/5] overflow-hidden rounded-xl border border-gold/40 bg-muted shadow-lg">
               <img

@@ -18,7 +18,7 @@ export const VenueSection: React.FC = () => {
     `${cityName} · ${weddingConfig.date.short || weddingData.dateShort}`;
 
   return (
-    <section id="venue" className="relative overflow-hidden bg-maroon px-5 py-24 text-paper sm:py-36">
+    <section id="venue" className="relative overflow-hidden bg-maroon px-5 py-14 text-paper sm:py-20">
       <div className="pointer-events-none absolute -right-20 -top-20 w-80 select-none">
         <img
           src={assets.mandalaMaroon}
@@ -30,7 +30,7 @@ export const VenueSection: React.FC = () => {
         />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl gap-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+      <div className="relative mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
         <RevealOnScroll>
           <p className="eyebrow text-gold">The way to the wedding</p>
           <h2 className="mt-4 font-display text-5xl leading-none sm:text-6xl">Join us in {cityName}</h2>

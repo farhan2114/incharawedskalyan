@@ -1,4 +1,4 @@
-﻿import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { weddingConfig } from '../wedding.config';
 import { SpinningMandala, Ornament } from './Ornaments';
@@ -312,7 +312,7 @@ export const ScratchCountdownSection: React.FC = () => {
     <section
       ref={containerRef}
       id="countdown"
-      className="relative overflow-hidden px-5 py-20 sm:py-28 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-50/60 via-background to-background"
+      className="relative overflow-hidden px-5 py-10 sm:py-14 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-50/60 via-background to-background"
     >
       <SpinningMandala reverse className="-left-20 top-1/4 w-44 sm:w-60" />
       <Ornament variant="gold" className="-right-10 top-12 w-28 rotate-12 sm:w-40" />
@@ -334,7 +334,7 @@ export const ScratchCountdownSection: React.FC = () => {
           <div className="rule-gold mx-auto mt-6 w-28" />
         </RevealOnScroll>
 
-        <div className="relative mx-auto mt-12 max-w-2xl">
+        <div className="relative mx-auto mt-8 max-w-2xl">
           <div
             ref={timerCardRef}
             className="paper-card relative overflow-hidden rounded-2xl border border-gold/40 bg-card/95 p-6 shadow-2xl backdrop-blur-sm sm:p-10"

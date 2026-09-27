@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import { weddingConfig } from "../wedding.config";
 import { Ornament, SpinningMandala } from "./Ornaments";
 import { RevealOnScroll } from "./RevealOnScroll";
@@ -124,7 +124,7 @@ export const RsvpSection: React.FC = () => {
     : [];
 
   return (
-    <section id="rsvp" className="relative overflow-hidden px-5 py-24 sm:py-32">
+    <section id="rsvp" className="relative overflow-hidden px-5 py-12 sm:py-16">
       <SpinningMandala className="-right-20 top-1/2 w-48 sm:w-64" />
       <Ornament variant="gold" className="-left-8 top-14 w-36 rotate-6 sm:w-48" />
       <Ornament variant="leaf" className="-right-10 bottom-10 w-36 -rotate-6 sm:w-52" />
@@ -138,7 +138,7 @@ export const RsvpSection: React.FC = () => {
           </p>
         </RevealOnScroll>
 
-        <div className="mt-16">
+        <div className="mt-10">
           {submitted ? (
             <RevealOnScroll>
               <div className="paper-card mx-auto max-w-xl px-7 py-10 text-center sm:px-12 sm:py-14">

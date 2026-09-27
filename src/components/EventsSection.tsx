@@ -39,7 +39,7 @@ export const EventsSection: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="events" className="relative overflow-clip px-5 py-24 sm:py-28">
+    <section ref={sectionRef} id="events" className="relative overflow-clip px-5 py-12 sm:py-16">
       <SpinningMandala className="-left-24 bottom-8 w-52 sm:w-72" />
       <img
         src={assets.mandalaGold}
@@ -57,23 +57,23 @@ export const EventsSection: React.FC = () => {
           <h2 className="mt-4 font-display text-4xl sm:text-6xl">Order of events</h2>
         </RevealOnScroll>
 
-        <div className="relative mt-14 pb-[2vh]">
+        <div className="relative mt-10 pb-2">
           {weddingData.events.slice(0, 3).map((event, idx) => (
             <div
               key={event.name}
-              className="event-card sticky top-[14vh] mb-[8vh] origin-top will-change-transform"
+              className="event-card sticky top-[12vh] mb-[3vh] origin-top will-change-transform"
               style={{ zIndex: idx + 1 }}
             >
-              <article className="paper-card relative mx-auto min-h-[44vh] max-w-3xl overflow-hidden px-7 py-10 text-center sm:min-h-[48vh] sm:px-16 sm:py-14">
+              <article className="paper-card relative mx-auto min-h-[34vh] max-w-3xl overflow-hidden px-6 py-8 text-center sm:min-h-[38vh] sm:px-14 sm:py-10">
                 <span className="absolute left-6 top-5 font-display text-7xl text-gold/15 sm:text-9xl">
                   0{idx + 1}
                 </span>
                 <p className="eyebrow">{event.day}</p>
-                <h3 className="mt-8 font-display text-4xl sm:text-5xl">{event.name}</h3>
-                <div className="rule-gold mx-auto mt-8 w-28" />
-                <p className="mt-8 font-title text-xl">{event.time}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{event.place}</p>
-                <p className="mx-auto mt-8 max-w-md text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="mt-5 font-display text-3xl sm:text-5xl">{event.name}</h3>
+                <div className="rule-gold mx-auto mt-5 w-24" />
+                <p className="mt-5 font-title text-lg sm:text-xl">{event.time}</p>
+                <p className="mt-1.5 text-sm text-muted-foreground">{event.place}</p>
+                <p className="mx-auto mt-5 max-w-md text-xs uppercase tracking-[0.2em] text-muted-foreground">
                   {event.note}
                 </p>
               </article>

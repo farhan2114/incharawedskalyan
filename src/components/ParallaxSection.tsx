@@ -16,10 +16,10 @@ export const ParallaxSection: React.FC = () => {
     const ctx = gsap.context(() => {
       gsap.fromTo(
         '.parallax-img',
-        { yPercent: -6, scale: 1.15 },
+        { yPercent: -3, scale: 1.04 },
         {
-          yPercent: 6,
-          scale: 1.15,
+          yPercent: 3,
+          scale: 1.04,
           ease: 'none',
           scrollTrigger: {
             trigger: el,
@@ -39,31 +39,31 @@ export const ParallaxSection: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="relative h-[65vh] min-h-[480px] sm:min-h-[580px] md:h-[76vh] overflow-hidden bg-[#24080e]"
+      className="relative h-[48vh] min-h-[360px] sm:h-[62vh] sm:min-h-[480px] lg:h-[70vh] overflow-hidden bg-[#1a0a0f]"
     >
       <img
         src={banner.image || '/client-images/banner.jpg'}
-        alt={banner.alt || 'The wedding mandap'}
-        loading="lazy"
-        width={1920}
-        height={1080}
-        className="parallax-img absolute -top-[15%] left-0 h-[130%] w-full object-cover object-center sm:object-[center_45%] will-change-transform brightness-[0.92]"
+        alt={banner.alt || 'Beach sunset wedding mandap at ANASUYA, Kapu'}
+        loading="eager"
+        decoding="async"
+        className="parallax-img absolute -top-[8%] left-0 h-[116%] w-full object-cover object-center will-change-transform"
+        style={{ imageRendering: 'auto' }}
       />
-      {/* Cinematic Vignette Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/50" />
+      {/* Subtle Warm Vignette Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/40" />
 
       {/* Floating Glassmorphic Transparent Card with Quote */}
-      <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6">
-        <div className="relative mx-auto max-w-xl rounded-2xl border border-gold/40 bg-black/45 px-6 py-8 text-center shadow-2xl backdrop-blur-md sm:px-10 sm:py-10">
-          <span className="font-serif text-[11px] sm:text-xs uppercase tracking-[0.3em] text-gold font-medium">
-            Sacred Union &bull; ANASUYA, Kapu
+      <div className="absolute inset-0 flex items-center justify-center p-4 sm:p-6">
+        <div className="relative mx-auto max-w-lg rounded-2xl border border-gold/50 bg-black/40 px-5 py-6 text-center shadow-2xl backdrop-blur-md sm:px-8 sm:py-8">
+          <span className="font-serif text-[10px] sm:text-xs uppercase tracking-[0.28em] text-gold font-medium">
+            Where Celebrations Meet The Shore
           </span>
-          <p className="mt-4 font-display text-xl sm:text-3xl md:text-4xl leading-relaxed text-paper drop-shadow">
+          <p className="mt-3 font-display text-lg sm:text-2xl md:text-3xl leading-snug sm:leading-relaxed text-paper drop-shadow-md">
             &ldquo;{banner.quote}&rdquo;
           </p>
-          <div className="rule-gold mx-auto mt-5 w-20" />
-          <p className="mt-4 font-title text-xs sm:text-sm tracking-widest uppercase text-paper/80">
-            Inchara &amp; Kalyan
+          <div className="rule-gold mx-auto mt-4 w-16" />
+          <p className="mt-3 font-title text-[11px] sm:text-xs tracking-widest uppercase text-paper/90">
+            Inchara &amp; Kalyan &bull; Kapu Beach
           </p>
         </div>
       </div>
