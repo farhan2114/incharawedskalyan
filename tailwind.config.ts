@@ -49,6 +49,8 @@ export default {
       },
       fontFamily: {
         display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        traditional: ['"Playfair Display"', '"Cormorant Garamond"', 'Georgia', 'serif'],
+        cinzel: ['"Cinzel Decorative"', 'Georgia', 'serif'],
         title: ['"Marcellus"', 'Georgia', 'serif'],
         sans: ['"Karla"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
