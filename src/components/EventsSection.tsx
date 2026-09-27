@@ -153,12 +153,20 @@ export const EventsSection: React.FC = () => {
                   {/* Translucent Soft White Card Pod on Left with Auspicious Gold Mandala Outline */}
                   <div className="relative z-20 flex h-full items-center p-3.5 sm:p-7 md:p-10">
                     <div className="relative overflow-hidden flex flex-col items-center justify-center rounded-[24px] sm:rounded-[30px] bg-white/92 sm:bg-white/88 backdrop-blur-lg border-2 border-white/95 px-6 py-6 sm:px-10 sm:py-8 text-center shadow-[0_12px_36px_rgba(0,0,0,0.18)] max-w-[270px] sm:max-w-[330px] md:max-w-[360px] w-full transition-transform duration-300 group-hover:scale-[1.02]">
-                      {/* Auspicious Gold Mandala Outline Watermark */}
+                      {/* Auspicious Cut Gold Mandala along Top Border (Stationary Arch) */}
                       <img
-                        src="/assets/gold-mandala-outline.png"
+                        src="/assets/gold-mandala-arch-down.png"
                         alt=""
                         aria-hidden="true"
-                        className="pointer-events-none absolute inset-0 m-auto h-[250px] w-[250px] sm:h-[300px] sm:w-[300px] opacity-30 sm:opacity-35 object-contain select-none animate-spin-soft"
+                        className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-44 sm:w-52 h-auto opacity-45 select-none object-contain drop-shadow-sm"
+                      />
+
+                      {/* Auspicious Cut Gold Mandala along Bottom Border (Stationary Arch) */}
+                      <img
+                        src="/assets/gold-mandala-half.png"
+                        alt=""
+                        aria-hidden="true"
+                        className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 w-44 sm:w-52 h-auto opacity-45 select-none object-contain drop-shadow-sm"
                       />
 
                       {/* Top Traditional Motif Icon */}
