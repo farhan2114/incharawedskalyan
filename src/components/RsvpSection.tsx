@@ -89,9 +89,9 @@ export const RsvpSection: React.FC = () => {
       guest_count: data.guestCount,
       attending_events: attendingList || "None",
       declined_events: declinedList || "None",
-      nichayathartham: attendance["Nichayathartham"] === "attending" ? "Yes" : "No",
-      sangeet: attendance["Mehndi & Sangeet"] === "attending" ? "Yes" : "No",
-      muhurtham: attendance["Muhurtham"] === "attending" ? "Yes" : "No",
+      haldi: attendance["Haldi"] === "attending" ? "Yes" : "No",
+      sangeet: attendance["Sangeet"] === "attending" ? "Yes" : "No",
+      wedding: attendance["Wedding"] === "attending" ? "Yes" : "No",
       note: data.note || "",
     });
     setIsSubmitting(false);

@@ -21,9 +21,9 @@ export interface RsvpPayload {
   guest_count: number;
   attending_events: string;
   declined_events: string;
-  nichayathartham?: 'Yes' | 'No';
+  haldi?: 'Yes' | 'No';
   sangeet?: 'Yes' | 'No';
-  muhurtham?: 'Yes' | 'No';
+  wedding?: 'Yes' | 'No';
   note: string;
 }
 
@@ -62,9 +62,9 @@ export async function saveRsvpToGoogleSheet(payload: RsvpPayload): Promise<void>
         guest_count: payload.guest_count,
         attending_events: payload.attending_events,
         declined_events: payload.declined_events,
-        nichayathartham: payload.nichayathartham || 'No',
+        haldi: payload.haldi || 'No',
         sangeet: payload.sangeet || 'No',
-        muhurtham: payload.muhurtham || 'No',
+        wedding: payload.wedding || 'No',
         note: payload.note || '-',
       }),
     });

@@ -77,6 +77,14 @@ export default {
           '0%': { strokeDashoffset: '520px' },
           '100%': { strokeDashoffset: '0' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'scale-up': {
+          '0%': { opacity: '0', transform: 'scale(0.94)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
       },
       animation: {
         'float-slow': '7s ease-in-out infinite float-slow',
@@ -84,6 +92,8 @@ export default {
         'spin-soft': '36s linear infinite spin-soft',
         'spin-soft-reverse': '48s linear infinite reverse spin-soft',
         'map-pulse': '2.4s ease-out infinite map-pulse',
+        'fade-in': '0.2s ease-out forwards fade-in',
+        'scale-up': '0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards scale-up',
       },
     },
   },
