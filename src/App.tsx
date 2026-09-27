@@ -2,13 +2,13 @@ import React, { useEffect } from 'react';
 import Lenis from 'lenis';
 import { HeroSection } from './components/HeroSection';
 import { IntroSection } from './components/IntroSection';
+import { ScratchCountdownSection } from './components/ScratchCountdownSection';
 import { MeetCoupleSection } from './components/MeetCoupleSection';
 import { GallerySection } from './components/GallerySection';
 import { ParallaxSection } from './components/ParallaxSection';
-import { ScratchCountdownSection } from './components/ScratchCountdownSection';
 import { EventsSection } from './components/EventsSection';
 import { VenueSection } from './components/VenueSection';
-import { BlessingsSection } from './components/BlessingsSection';
+import { RsvpSection } from './components/RsvpSection';
 import { GratitudeSection } from './components/GratitudeSection';
 import { Footer } from './components/Footer';
 import { MusicButton } from './components/MusicButton';
@@ -41,13 +41,13 @@ export const App: React.FC = () => {
     <main>
       <HeroSection />
       <IntroSection />
+      <ScratchCountdownSection />
       <MeetCoupleSection />
       <GallerySection />
       <ParallaxSection />
-      <ScratchCountdownSection />
       <EventsSection />
       <VenueSection />
-      <BlessingsSection />
+      <RsvpSection />
       <GratitudeSection />
       <Footer />
       <MusicButton />

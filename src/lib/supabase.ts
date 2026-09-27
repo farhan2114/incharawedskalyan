@@ -8,10 +8,82 @@ export interface BlessingItem {
   created_at?: string;
 }
 
-const SUPABASE_URL = 'https://ekmobqyfwzyoqkpwihun.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_48RlgrD2RirZ85gyRJzsTA_kdNillw3';
+const SUPABASE_URL = 'https://lyukxpzpcjedvrkwrcur.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_7USKYo1sBAT7p3_kqWdrqg_RCxNm3yd';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+export const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwLV_52cSrJPWpsMfFJrY4xZ-3iCV8WPR5612i-v9qB_koaaX1u6QfOU3tq5fDLq1b-Mg/exec';
+
+export interface RsvpPayload {
+  name: string;
+  email: string;
+  guest_count: number;
+  attending_events: string;
+  declined_events: string;
+  nichayathartham?: 'Yes' | 'No';
+  sangeet?: 'Yes' | 'No';
+  muhurtham?: 'Yes' | 'No';
+  note: string;
+}
+
+export async function saveRsvpToSupabase(payload: RsvpPayload): Promise<{ success: boolean; error?: string }> {
+  try {
+    const { error } = await supabase.from('rsvps').insert([{
+      name: payload.name,
+      email: payload.email,
+      guest_count: payload.guest_count,
+      attending_events: payload.attending_events,
+      declined_events: payload.declined_events,
+      note: payload.note,
+    }]);
+    if (error) {
+      console.warn('Supabase RSVP insert error:', error);
+      return { success: false, error: error.message };
+    }
+    return { success: true };
+  } catch (err: any) {
+    console.warn('Supabase RSVP exception:', err);
+    return { success: false, error: err?.message || 'Network error' };
+  }
+}
+
+export async function saveRsvpToGoogleSheet(payload: RsvpPayload): Promise<void> {
+  try {
+    await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: payload.name,
+        email: payload.email,
+        guest_count: payload.guest_count,
+        attending_events: payload.attending_events,
+        declined_events: payload.declined_events,
+        nichayathartham: payload.nichayathartham || 'No',
+        sangeet: payload.sangeet || 'No',
+        muhurtham: payload.muhurtham || 'No',
+        note: payload.note || '-',
+      }),
+    });
+  } catch (err) {
+    console.warn('Google Sheet RSVP sync failed:', err);
+  }
+}
+
+export async function saveRsvp(payload: RsvpPayload): Promise<{ success: boolean; error?: string }> {
+  const [supabaseRes] = await Promise.allSettled([
+    saveRsvpToSupabase(payload),
+    saveRsvpToGoogleSheet(payload),
+  ]);
+
+  if (supabaseRes.status === 'fulfilled' && !supabaseRes.value.success) {
+    return { success: false, error: supabaseRes.value.error };
+  }
+  return { success: true };
+}
 
 const FALLBACK_KEY = 'vows_blessings_cache';
 
