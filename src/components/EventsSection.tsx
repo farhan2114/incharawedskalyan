@@ -65,8 +65,8 @@ export const EventsSection: React.FC = () => {
       titleColor: 'text-[#5C2E00]',
       titleShadow: 'drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]',
       gradientOverlay: 'from-[#FFF8E7] via-[#FFF3D6]/95 via-40% sm:via-48% to-transparent',
-      btnBg: 'bg-[#C4820E] hover:bg-[#AA6D08]',
-      btnRing: 'ring-[#B87A0D] border-[#FFF3BD]',
+      btnBg: 'bg-gradient-to-br from-[#D98A16] via-[#B87A0D] to-[#8C5503] hover:from-[#E59620] hover:to-[#A36605]',
+      btnRing: 'ring-[#E5B842] border-white/90',
       btnColor: 'text-white',
       topIcon: (
         <svg className="w-6 h-6 sm:w-9 sm:h-9 text-[#B5780E] drop-shadow-sm" viewBox="0 0 48 48" fill="currentColor">
@@ -81,8 +81,8 @@ export const EventsSection: React.FC = () => {
       titleColor: 'text-[#FFF4D0]',
       titleShadow: 'drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
       gradientOverlay: 'from-[#170520] via-[#240833]/95 via-40% sm:via-48% to-transparent',
-      btnBg: 'bg-[#521343] hover:bg-[#6C1A58]',
-      btnRing: 'ring-[#D4AF37] border-[#FCE7F3]',
+      btnBg: 'bg-gradient-to-br from-[#6C1A58] via-[#4A0E3D] to-[#2E0527] hover:from-[#7E2167] hover:to-[#3D0A32]',
+      btnRing: 'ring-[#D4AF37] border-[#FFF4D0]',
       btnColor: 'text-[#FFF4D0]',
       topIcon: (
         <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-[#F5DE98] text-base sm:text-2xl font-bold tracking-widest drop-shadow">
@@ -96,8 +96,8 @@ export const EventsSection: React.FC = () => {
       titleColor: 'text-[#6B091B]',
       titleShadow: 'drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]',
       gradientOverlay: 'from-[#FFF4F4] via-[#FEEBEB]/95 via-40% sm:via-48% to-transparent',
-      btnBg: 'bg-[#7B1226] hover:bg-[#96152F]',
-      btnRing: 'ring-[#7B1226] border-[#FFE4E8]',
+      btnBg: 'bg-gradient-to-br from-[#96152F] via-[#7B1226] to-[#500816] hover:from-[#A81B38] hover:to-[#630A1C]',
+      btnRing: 'ring-[#E5B842] border-white/90',
       btnColor: 'text-white',
       topIcon: (
         <svg className="w-6 h-6 sm:w-9 sm:h-9 text-[#7B1226] drop-shadow-sm" viewBox="0 0 48 48" fill="currentColor">
@@ -160,18 +160,18 @@ export const EventsSection: React.FC = () => {
                     className={`absolute inset-0 bg-gradient-to-r ${theme.gradientOverlay} pointer-events-none z-10 transition-opacity duration-300`}
                   />
 
-                  {/* Corner Mandala Outlines on the Border matching reference image */}
+                  {/* Gold Flower Outlines in Empty Spaces (Corners away from text) */}
                   <img
-                    src="/assets/gold-mandala-corner.png"
+                    src="/assets/gold-flower-corner.png"
                     alt=""
                     aria-hidden="true"
-                    className="pointer-events-none absolute top-0 left-0 w-24 xs:w-28 sm:w-44 h-auto opacity-30 select-none object-contain z-10"
+                    className="pointer-events-none absolute -bottom-3 -right-3 sm:-bottom-4 sm:-right-4 w-28 xs:w-36 sm:w-60 md:w-68 h-auto opacity-65 sm:opacity-75 group-hover:opacity-90 select-none object-contain rotate-180 z-20 transition-all duration-500 group-hover:scale-105"
                   />
                   <img
-                    src="/assets/gold-mandala-corner.png"
+                    src="/assets/gold-flower-corner.png"
                     alt=""
                     aria-hidden="true"
-                    className="pointer-events-none absolute bottom-0 left-0 w-24 xs:w-28 sm:w-44 h-auto opacity-30 select-none object-contain -scale-y-100 z-10"
+                    className="pointer-events-none absolute -top-4 -right-4 sm:-top-5 sm:-right-5 w-24 xs:w-32 sm:w-52 md:w-56 h-auto opacity-45 sm:opacity-55 group-hover:opacity-75 select-none object-contain z-20 transition-all duration-500 group-hover:scale-105"
                   />
 
                   {/* Inner Golden Outline Frame */}
@@ -199,7 +199,7 @@ export const EventsSection: React.FC = () => {
                         className="w-24 xs:w-28 sm:w-48 h-auto scale-y-[-1] object-contain drop-shadow-sm my-1 xs:my-1.5 sm:my-2.5 brightness-110"
                       />
 
-                      {/* Golden-Bordered Circular Arrow Button */}
+                      {/* Modern Golden-Bordered Circular Arrow Button (Slightly bigger & modern) */}
                       <button
                         type="button"
                         onClick={(e) => {
@@ -207,9 +207,11 @@ export const EventsSection: React.FC = () => {
                           setActiveModalEvent(event);
                         }}
                         aria-label={`View details for ${event.name}`}
-                        className={`mt-0.5 sm:mt-1 flex h-8 w-8 xs:h-9 xs:w-9 sm:h-13 sm:w-13 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2px] sm:border-[2.5px] ${theme.btnRing} shadow-[0_4px_12px_rgba(0,0,0,0.25)] ring-1 sm:ring-2 ring-gold/70 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold active:scale-95`}
+                        className={`group/btn relative mt-1 sm:mt-2 flex h-10 w-10 xs:h-11 xs:w-11 sm:h-14 sm:w-14 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2px] sm:border-[2.5px] ${theme.btnRing} shadow-[0_4px_16px_rgba(0,0,0,0.28),0_0_12px_rgba(212,175,55,0.4)] ring-2 sm:ring-2 ring-gold/80 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold/90 group-hover:shadow-[0_6px_22px_rgba(0,0,0,0.35),0_0_24px_rgba(212,175,55,0.7)] active:scale-95`}
                       >
-                        <ArrowRight className="h-4 w-4 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:translate-x-0.5" />
+                        {/* Modern Glass Sheen Highlight */}
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-white/10 to-white/35 pointer-events-none" />
+                        <ArrowRight className="relative z-10 h-5 w-5 sm:h-7 sm:w-7 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2.5} />
                       </button>
                     </div>
                   </div>
