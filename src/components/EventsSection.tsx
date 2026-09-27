@@ -53,6 +53,8 @@ export const EventsSection: React.FC = () => {
     string,
     {
       titleColor: string;
+      titleShadow: string;
+      gradientOverlay: string;
       btnBg: string;
       btnRing: string;
       btnColor: string;
@@ -60,12 +62,14 @@ export const EventsSection: React.FC = () => {
     }
   > = {
     haldi: {
-      titleColor: 'text-[#613D00]',
+      titleColor: 'text-[#5C2E00]',
+      titleShadow: 'drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]',
+      gradientOverlay: 'from-[#FFF8E7] via-[#FFF3D6]/95 via-40% sm:via-48% to-transparent',
       btnBg: 'bg-[#C4820E] hover:bg-[#AA6D08]',
       btnRing: 'ring-[#B87A0D] border-[#FFF3BD]',
       btnColor: 'text-white',
       topIcon: (
-        <svg className="w-5 h-5 sm:w-9 sm:h-9 text-[#C4820E] drop-shadow-sm" viewBox="0 0 48 48" fill="currentColor">
+        <svg className="w-6 h-6 sm:w-9 sm:h-9 text-[#B5780E] drop-shadow-sm" viewBox="0 0 48 48" fill="currentColor">
           <path d="M24 5c-1.8 6-5.5 10.5-10 13 3.5 3 8 5 10 11.5 2-6.5 6.5-8.5 10-11.5-4.5-2.5-8.2-7-10-13z" />
           <path d="M11 18c-4 3.5-8 8.5-6.5 14.5 4.5-1 9-4.5 11-8-2.5-2.5-4-4.5-4.5-6.5z" opacity="0.85" />
           <path d="M37 18c-.5 2-2 4-4.5 6.5 2 3.5 6.5 7 11 8 1.5-6-2.5-11-6.5-14.5z" opacity="0.85" />
@@ -74,12 +78,14 @@ export const EventsSection: React.FC = () => {
       ),
     },
     sangeet: {
-      titleColor: 'text-[#2D0D3B]',
+      titleColor: 'text-[#FFF4D0]',
+      titleShadow: 'drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]',
+      gradientOverlay: 'from-[#170520] via-[#240833]/95 via-40% sm:via-48% to-transparent',
       btnBg: 'bg-[#521343] hover:bg-[#6C1A58]',
-      btnRing: 'ring-[#521343] border-[#FCE7F3]',
-      btnColor: 'text-[#FBF5D4]',
+      btnRing: 'ring-[#D4AF37] border-[#FCE7F3]',
+      btnColor: 'text-[#FFF4D0]',
       topIcon: (
-        <div className="flex items-center gap-1 sm:gap-1.5 text-[#521343] text-sm sm:text-2xl font-bold tracking-widest drop-shadow-sm">
+        <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-[#F5DE98] text-base sm:text-2xl font-bold tracking-widest drop-shadow">
           <span>♫</span>
           <span className="text-xs sm:text-lg">♪</span>
           <span>♬</span>
@@ -87,12 +93,14 @@ export const EventsSection: React.FC = () => {
       ),
     },
     wedding: {
-      titleColor: 'text-[#680C1D]',
+      titleColor: 'text-[#6B091B]',
+      titleShadow: 'drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]',
+      gradientOverlay: 'from-[#FFF4F4] via-[#FEEBEB]/95 via-40% sm:via-48% to-transparent',
       btnBg: 'bg-[#7B1226] hover:bg-[#96152F]',
       btnRing: 'ring-[#7B1226] border-[#FFE4E8]',
       btnColor: 'text-white',
       topIcon: (
-        <svg className="w-5 h-5 sm:w-9 sm:h-9 text-[#7B1226] drop-shadow-sm" viewBox="0 0 48 48" fill="currentColor">
+        <svg className="w-6 h-6 sm:w-9 sm:h-9 text-[#7B1226] drop-shadow-sm" viewBox="0 0 48 48" fill="currentColor">
           <path d="M24 8c-2.2 4.5-6.5 7.5-11 8 3.5 3.5 8 4.5 9 9 1-4.5 5.5-5.5 9-9-4.5-.5-8.8-3.5-7-8z" />
           <path d="M13 19c-3.5 2.5-6.5 6.5-5.5 11.5 4-.5 8-3.5 9.5-6-1.5-2-3-3.5-4-5.5z" opacity="0.85" />
           <path d="M35 19c-1 2-2.5 3.5-4 5.5 1.5 2.5 5.5 5.5 9.5 6 1-5-2-9-5.5-11.5z" opacity="0.85" />
@@ -135,48 +143,51 @@ export const EventsSection: React.FC = () => {
               <RevealOnScroll key={event.name} delay={idx * 0.1}>
                 <div
                   onClick={() => setActiveModalEvent(event)}
-                  className="group relative h-[230px] xs:h-[250px] sm:h-[360px] md:h-[390px] w-full overflow-hidden rounded-[22px] sm:rounded-[36px] border-[2.5px] sm:border-[3px] border-[#D4AF37] ring-1 ring-[#FFF2B2]/60 shadow-[0_12px_36px_rgba(212,175,55,0.22)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(212,175,55,0.32)] cursor-pointer"
+                  className="group relative h-[220px] xs:h-[240px] sm:h-[350px] md:h-[380px] w-full overflow-hidden rounded-[24px] sm:rounded-[36px] border-[2.5px] sm:border-[3px] border-[#D4AF37] ring-1 ring-[#FFF2B2]/60 shadow-[0_12px_36px_rgba(212,175,55,0.22)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(212,175,55,0.32)] cursor-pointer"
                 >
-                  {/* Full HD Pristine Background Image (No color wash, full saturation & clarity) */}
+                  {/* Full HD Pristine Background Image */}
                   <img
                     src={event.image}
                     alt={event.name}
                     loading="eager"
                     decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover object-right sm:object-center transition-transform duration-700 ease-out group-hover:scale-105"
                     style={{ imageRendering: 'auto' }}
                   />
 
+                  {/* Seamless Linear Gradient matching the background image from left to right */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${theme.gradientOverlay} pointer-events-none z-10 transition-opacity duration-300`}
+                  />
+
+                  {/* Corner Mandala Outlines on the Border matching reference image */}
+                  <img
+                    src="/assets/gold-mandala-corner.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute top-0 left-0 w-24 xs:w-28 sm:w-44 h-auto opacity-30 select-none object-contain z-10"
+                  />
+                  <img
+                    src="/assets/gold-mandala-corner.png"
+                    alt=""
+                    aria-hidden="true"
+                    className="pointer-events-none absolute bottom-0 left-0 w-24 xs:w-28 sm:w-44 h-auto opacity-30 select-none object-contain -scale-y-100 z-10"
+                  />
+
                   {/* Inner Golden Outline Frame */}
-                  <div className="pointer-events-none absolute inset-2 sm:inset-3.5 rounded-[17px] sm:rounded-[30px] border border-[#D4AF37]/50 z-10" />
+                  <div className="pointer-events-none absolute inset-2 sm:inset-3.5 rounded-[18px] sm:rounded-[30px] border border-[#D4AF37]/50 z-20" />
 
-                  {/* Translucent Soft White Card Pod on Left with Auspicious Gold Mandala Outline */}
-                  <div className="relative z-20 flex h-full items-center p-2.5 xs:p-3 sm:p-7 md:p-10">
-                    <div className="relative overflow-hidden flex flex-col items-center justify-center rounded-[18px] sm:rounded-[30px] bg-white/92 sm:bg-white/88 backdrop-blur-lg border border-white/90 sm:border-2 sm:border-white/95 px-3 py-2.5 xs:px-4 xs:py-3.5 sm:px-10 sm:py-8 text-center shadow-[0_8px_24px_rgba(0,0,0,0.14)] sm:shadow-[0_12px_36px_rgba(0,0,0,0.18)] w-[150px] xs:w-[170px] sm:w-[320px] md:w-[360px] transition-transform duration-300 group-hover:scale-[1.02]">
-                      {/* Auspicious Cut Gold Mandala along Top Border (Stationary Arch) */}
-                      <img
-                        src="/assets/gold-mandala-arch-down.png"
-                        alt=""
-                        aria-hidden="true"
-                        className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-24 xs:w-28 sm:w-52 h-auto opacity-35 sm:opacity-45 select-none object-contain drop-shadow-sm"
-                      />
-
-                      {/* Auspicious Cut Gold Mandala along Bottom Border (Stationary Arch) */}
-                      <img
-                        src="/assets/gold-mandala-half.png"
-                        alt=""
-                        aria-hidden="true"
-                        className="pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 w-24 xs:w-28 sm:w-52 h-auto opacity-35 sm:opacity-45 select-none object-contain drop-shadow-sm"
-                      />
-
+                  {/* Left-Aligned Seamless Text & Action Column */}
+                  <div className="relative z-30 flex h-full items-center pl-4 xs:pl-6 sm:pl-12 md:pl-16">
+                    <div className="flex flex-col items-center justify-center text-center w-[150px] xs:w-[175px] sm:w-[260px] md:w-[290px] transition-transform duration-300 group-hover:scale-[1.02]">
                       {/* Top Traditional Motif Icon */}
-                      <div className="relative z-10 mb-0.5 sm:mb-2 transition-transform duration-300 group-hover:scale-110">
+                      <div className="mb-0.5 sm:mb-2 transition-transform duration-300 group-hover:scale-110">
                         {theme.topIcon}
                       </div>
 
                       {/* Traditional Stylish Title */}
                       <h3
-                        className={`relative z-10 font-traditional italic font-bold text-2xl xs:text-3xl sm:text-5xl md:text-6xl tracking-tight ${theme.titleColor} drop-shadow-sm`}
+                        className={`font-traditional italic font-bold text-3xl xs:text-4xl sm:text-6xl md:text-7xl tracking-tight ${theme.titleColor} ${theme.titleShadow}`}
                       >
                         {event.name}
                       </h3>
@@ -185,7 +196,7 @@ export const EventsSection: React.FC = () => {
                       <img
                         src="/assets/gold-flourish.png"
                         alt="Auspicious Tilak Flourish"
-                        className="relative z-10 w-20 xs:w-26 sm:w-48 h-auto scale-y-[-1] object-contain drop-shadow-sm my-0.5 xs:my-1 sm:my-2.5"
+                        className="w-24 xs:w-28 sm:w-48 h-auto scale-y-[-1] object-contain drop-shadow-sm my-1 xs:my-1.5 sm:my-2.5 brightness-110"
                       />
 
                       {/* Golden-Bordered Circular Arrow Button */}
@@ -196,15 +207,15 @@ export const EventsSection: React.FC = () => {
                           setActiveModalEvent(event);
                         }}
                         aria-label={`View details for ${event.name}`}
-                        className={`relative z-10 mt-0.5 sm:mt-1 flex h-8 w-8 xs:h-9 xs:w-9 sm:h-14 sm:w-14 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2px] sm:border-[2.5px] ${theme.btnRing} shadow-[0_4px_12px_rgba(0,0,0,0.2)] ring-1 sm:ring-2 ring-gold/70 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold active:scale-95`}
+                        className={`mt-0.5 sm:mt-1 flex h-8 w-8 xs:h-9 xs:w-9 sm:h-13 sm:w-13 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2px] sm:border-[2.5px] ${theme.btnRing} shadow-[0_4px_12px_rgba(0,0,0,0.25)] ring-1 sm:ring-2 ring-gold/70 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold active:scale-95`}
                       >
-                        <ArrowRight className="h-3.5 w-3.5 xs:h-4 xs:w-4 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:translate-x-0.5" />
+                        <ArrowRight className="h-4 w-4 sm:h-6 sm:w-6 transition-transform duration-300 group-hover:translate-x-0.5" />
                       </button>
                     </div>
                   </div>
 
                   {/* Corner Accent Date Badge - High Visibility Ivory & Gold */}
-                  <div className="absolute right-2 top-2 sm:right-5 sm:top-5 z-20 flex items-center gap-1 sm:gap-1.5 rounded-full bg-white/95 px-2 py-0.5 sm:px-4 sm:py-2 font-serif text-[8.5px] xs:text-[9.5px] sm:text-xs uppercase tracking-wider sm:tracking-widest text-[#3A0810] font-bold backdrop-blur-md border border-[#D4AF37] sm:border-2 shadow-md">
+                  <div className="absolute right-2.5 top-2.5 sm:right-5 sm:top-5 z-30 flex items-center gap-1 sm:gap-1.5 rounded-full bg-white/95 px-2.5 py-0.5 sm:px-4 sm:py-2 font-serif text-[8.5px] xs:text-[9.5px] sm:text-xs uppercase tracking-wider sm:tracking-widest text-[#3A0810] font-bold backdrop-blur-md border border-[#D4AF37] sm:border-2 shadow-md">
                     <span className="inline-block h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-[#D4AF37]" />
                     {event.day}
                   </div>

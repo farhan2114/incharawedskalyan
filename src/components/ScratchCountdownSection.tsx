@@ -242,7 +242,7 @@ export const ScratchCountdownSection: React.FC = () => {
     const pct = Math.round((transparentCount / totalSamples) * 100);
     setScratchProgress(pct);
 
-    if (pct >= 28 && !hasRevealedRef.current) {
+    if (pct >= 42 && !hasRevealedRef.current) {
       hasRevealedRef.current = true;
       setIsRevealed(true);
       try {
@@ -264,7 +264,12 @@ export const ScratchCountdownSection: React.FC = () => {
     const scaleY = canvas.height / rect.height;
     const currentX = (clientX - rect.left) * scaleX;
     const currentY = (clientY - rect.top) * scaleY;
-    const brushRadius = 36 * (window.devicePixelRatio || 1);
+    
+    // Coin-sized realistic scratch diameter (approx 26px on mobile, 36px on desktop)
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 640;
+    const cssRadius = isMobile ? 13 : 18;
+    const dpr = window.devicePixelRatio || 1;
+    const brushRadius = cssRadius * dpr;
 
     ctx.globalCompositeOperation = 'destination-out';
     ctx.lineWidth = brushRadius * 2;
