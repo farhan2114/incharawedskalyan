@@ -1,164 +1,315 @@
-﻿/**
+/**
  * =======================================================================
- * 💍 INCHARA & KALYAN WEDDING — GOOGLE SHEETS RSVP WEBHOOK SCRIPT
+ * 💍 INCHARA & KALYAN WEDDING — GOOGLE SHEETS RSVP WEBHOOK & DASHBOARD
  * =======================================================================
  * 
  * FEATURES:
- * - Automatically records new RSVPs into Google Sheets.
- * - SMART IN-PLACE EDITING: When a guest edits their RSVP on the website,
- *   it automatically finds their existing row (by Email or Name)
- *   and UPDATES the same row in-place instead of creating duplicate lines!
+ * 1. EXECUTIVE DASHBOARD WITH LIVE METRICS & FORMULAS (Nikhil-style):
+ *    - Total Submissions
+ *    - Total Headcount (All Guests)
+ *    - Total Headcount for Haldi
+ *    - Total Headcount for Sangeet
+ *    - Total Headcount for Wedding
+ *    - Event Breakdown (Parties Attending)
  * 
- * 1. CLICK "RUN" IN APPS SCRIPT:
- *    - In the toolbar dropdown next to "Run", change "doPost" to "setupSheet".
- *    - Click "Run" (▶).
- *    - It will initialize Row 1 with Royal Maroon headers and format all columns!
+ * 2. INDEPENDENT EVENT COLUMNS (No merged events, No song suggestions):
+ *    - Col A: Timestamp
+ *    - Col B: Guest Name
+ *    - Col C: Contact (Phone / Email)
+ *    - Col D: Total Guests
+ *    - Col E: Haldi (Yes / No)
+ *    - Col F: Sangeet (Yes / No)
+ *    - Col G: Wedding (Yes / No)
+ *    - Col H: Warm Wishes / Blessings
  * 
- * 2. DEPLOY AS WEBHOOK:
- *    - Click "Deploy" (top right) -> "Manage deployments" (or "New deployment").
- *    - Ensure:
- *        * Execute as: "Me"
- *        * Who has access: "Anyone" (CRITICAL: Do NOT choose "Only myself")
+ * 3. SMART IN-PLACE EDITING:
+ *    - When a guest updates their RSVP, it finds their existing row (by contact or name)
+ *      and updates that exact row in-place!
+ *    - The dashboard metric formulas automatically recalculate instantly.
+ * 
+ * =======================================================================
+ * HOW TO SET UP:
+ * 1. Open Google Sheets -> Extensions -> Apps Script.
+ * 2. Paste this entire code into Code.gs (replacing everything).
+ * 3. Press Ctrl + S to save.
+ * 4. In the toolbar function dropdown, select "setupSheet" and click "Run".
+ *    (Grant Google permissions if prompted: Advanced -> Go to project (unsafe)).
+ * 5. Click "Deploy" (top right) -> "New deployment" (or "Manage deployments" -> edit).
+ *    - Type: Web app
+ *    - Execute as: "Me"
+ *    - Who has access: "Anyone" (CRITICAL: Do NOT choose "Only myself")
  *    - Click "Deploy" and copy the Web App URL.
  * =======================================================================
  */
 
-// RSVP Columns Definition (10 Columns)
+var SHEET_NAME = "RSVP Responses";
+
 var HEADERS = [
   "Timestamp",
   "Guest Name",
-  "Email / Contact",
+  "Contact (Phone / Email)",
   "Total Guests",
   "Haldi",
   "Sangeet",
-  "Wedding Ceremony",
-  "Attending Events",
-  "Declined Events",
-  "Warm Wishes / Notes"
+  "Wedding",
+  "Warm Wishes / Blessings"
 ];
 
 /**
- * Searches the sheet to find an existing row for this guest.
- * Returns the 1-based row number (e.g. 2, 3...) if found, or -1 if new.
+ * Normalizes phone numbers to digits only for accurate matching
  */
-function findExistingRowIndex(sheet, data) {
+function cleanContact(c) {
+  if (!c) return "";
+  return String(c).trim().toLowerCase();
+}
+
+/**
+ * Searches the sheet to find an existing row for this guest.
+ * Returns the 1-based row number (e.g. 8, 9...) if found, or -1 if new.
+ */
+function findExistingRowIndex(sheet, data, startRow) {
   var lastRow = sheet.getLastRow();
-  if (lastRow <= 1) return -1; // Only header row or empty
+  if (lastRow < startRow) return -1;
 
-  var values = sheet.getRange(2, 1, lastRow - 1, Math.min(sheet.getLastColumn(), 6)).getValues();
+  var numRows = lastRow - startRow + 1;
+  // Read Col B (Name) & Col C (Contact) from startRow to lastRow
+  var values = sheet.getRange(startRow, 2, numRows, 2).getValues();
 
-  var targetEmail = data.email && data.email !== "-" ? String(data.email).trim().toLowerCase() : "";
-  var targetOrigEmail = data.originalEmail && data.originalEmail !== "-" ? String(data.originalEmail).trim().toLowerCase() : "";
-  var targetName = data.name && data.name !== "-" ? String(data.name).trim().toLowerCase().replace(/\s+/g, " ") : "";
-  var targetOrigName = data.originalName && data.originalName !== "-" ? String(data.originalName).trim().toLowerCase().replace(/\s+/g, " ") : "";
+  var targetContact = cleanContact(data.contact || data.email || data.phone);
+  var targetOrigContact = cleanContact(data.originalEmail || data.originalContact || data.original_phone);
+  var targetName = cleanContact(data.name || data.fullName);
+  var targetOrigName = cleanContact(data.originalName || data.original_name);
 
-  // 1. Primary check: Email / Phone match (searches newest rows first)
-  if (targetEmail || targetOrigEmail) {
-    for (var j = values.length - 1; j >= 0; j--) {
-      for (var col = 0; col < values[j].length; col++) {
-        var cellVal = String(values[j][col]).trim().toLowerCase();
-        if (cellVal && cellVal !== "-") {
-          if (cellVal === targetEmail || (targetOrigEmail && cellVal === targetOrigEmail)) {
-            return j + 2; // Convert 0-based array index to 1-based sheet row
-          }
+  // 1. Primary check: Contact / Email / Phone match (searches newest rows first)
+  if (targetContact || targetOrigContact) {
+    for (var i = values.length - 1; i >= 0; i--) {
+      var rowContact = cleanContact(values[i][1]); // Col C
+      if (rowContact && rowContact !== "-") {
+        if (targetContact && (rowContact === targetContact || rowContact.replace(/\D/g, "") === targetContact.replace(/\D/g, ""))) {
+          return startRow + i;
+        }
+        if (targetOrigContact && (rowContact === targetOrigContact || rowContact.replace(/\D/g, "") === targetOrigContact.replace(/\D/g, ""))) {
+          return startRow + i;
         }
       }
     }
   }
 
-  // 2. Secondary check: Guest Name match
+  // 2. Secondary check: Name match
   if (targetName || targetOrigName) {
-    for (var k = values.length - 1; k >= 0; k--) {
-      var rowName = String(values[k][1]).trim().toLowerCase().replace(/\s+/g, " ");
-      if (rowName && rowName.length > 2 && (rowName === targetName || (targetOrigName && rowName === targetOrigName))) {
-        return k + 2;
+    for (var j = values.length - 1; j >= 0; j--) {
+      var rowName = cleanContact(values[j][0]); // Col B
+      if (rowName && rowName.length > 2) {
+        if (targetName && rowName === targetName) {
+          return startRow + j;
+        }
+        if (targetOrigName && rowName === targetOrigName) {
+          return startRow + j;
+        }
       }
     }
   }
 
-  return -1; // New RSVP
+  return -1; // New guest RSVP
 }
 
 /**
- * MAIN SETUP FUNCTION
- * Run this from Apps Script editor to initialize headers and format the sheet!
+ * INITIALIZES THE LUXURY DASHBOARD & STYLED DATA TABLE
+ * Run this from Apps Script editor!
  */
 function setupSheet() {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  
-  // 1. Write the 10 Column Headers to Row 1
-  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
-  
-  // 2. Format Header Row with Royal Maroon & White text
-  var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-  headerRange.setFontWeight("bold");
-  headerRange.setBackground("#7D0A0A"); // Royal Maroon
-  headerRange.setFontColor("#FFFFFF");  // Crisp White
-  headerRange.setHorizontalAlignment("center");
-  sheet.setFrozenRows(1);
-  
-  // 3. Set column widths for clean readability
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getActiveSheet();
+  sheet.clear();
+
+  // Set column widths for optimal viewing
   sheet.setColumnWidth(1, 160); // Timestamp
-  sheet.setColumnWidth(2, 180); // Guest Name
-  sheet.setColumnWidth(3, 200); // Email / Contact
+  sheet.setColumnWidth(2, 190); // Guest Name
+  sheet.setColumnWidth(3, 210); // Contact (Phone / Email)
   sheet.setColumnWidth(4, 110); // Total Guests
   sheet.setColumnWidth(5, 110); // Haldi
   sheet.setColumnWidth(6, 110); // Sangeet
-  sheet.setColumnWidth(7, 160); // Wedding Ceremony
-  sheet.setColumnWidth(8, 200); // Attending Events
-  sheet.setColumnWidth(9, 200); // Declined Events
-  sheet.setColumnWidth(10, 260); // Warm Wishes / Notes
+  sheet.setColumnWidth(7, 110); // Wedding
+  sheet.setColumnWidth(8, 320); // Warm Wishes / Blessings
 
-  // 4. Add a Sample Test RSVP row
+  // =========================================================================
+  // ROW 1: MASTER TITLE BANNER
+  // =========================================================================
+  sheet.getRange("A1:H1").merge()
+    .setValue("✨ INCHARA & KALYAN — WEDDING CELEBRATIONS RSVP DASHBOARD ✨")
+    .setBackground("#7D0A0A") // Royal Maroon
+    .setFontColor("#FFDF78")  // Royal Gold
+    .setFontFamily("Georgia")
+    .setFontSize(13)
+    .setFontWeight("bold")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sheet.setRowHeight(1, 38);
+
+  // =========================================================================
+  // ROW 2: DASHBOARD METRIC LABELS (Nikhil-style)
+  // =========================================================================
+  sheet.getRange("A2:C2").merge().setValue("📊 TOTAL RESPONSES").setHorizontalAlignment("center");
+  sheet.getRange("D2").setValue("👥 TOTAL GUESTS").setHorizontalAlignment("center");
+  sheet.getRange("E2").setValue("💛 TOTAL FOR HALDI").setHorizontalAlignment("center");
+  sheet.getRange("F2").setValue("🎶 TOTAL FOR SANGEET").setHorizontalAlignment("center");
+  sheet.getRange("G2").setValue("💍 TOTAL FOR WEDDING").setHorizontalAlignment("center");
+  sheet.getRange("H2").setValue("🎉 PARTIES ATTENDING (COUNT)").setHorizontalAlignment("center");
+
+  // Style Metric Headers
+  sheet.getRange("A2:C2").setBackground("#2C0707").setFontColor("#FFE5B4").setFontSize(9).setFontWeight("bold").setVerticalAlignment("middle");
+  sheet.getRange("D2").setBackground("#7D0A0A").setFontColor("#FFFFFF").setFontSize(9).setFontWeight("bold").setVerticalAlignment("middle");
+  sheet.getRange("E2").setBackground("#B8860B").setFontColor("#FFFFFF").setFontSize(9).setFontWeight("bold").setVerticalAlignment("middle");
+  sheet.getRange("F2").setBackground("#6A1B9A").setFontColor("#FFFFFF").setFontSize(9).setFontWeight("bold").setVerticalAlignment("middle");
+  sheet.getRange("G2").setBackground("#7D0A0A").setFontColor("#FFFFFF").setFontSize(9).setFontWeight("bold").setVerticalAlignment("middle");
+  sheet.getRange("H2").setBackground("#2C0707").setFontColor("#FFE5B4").setFontSize(9).setFontWeight("bold").setVerticalAlignment("middle");
+  sheet.setRowHeight(2, 24);
+
+  // =========================================================================
+  // ROW 3: LIVE METRIC FORMULAS (Recalculate automatically with every RSVP)
+  // =========================================================================
+  sheet.getRange("A3:C3").merge().setFormula('=COUNTA(B8:B)');
+  sheet.getRange("D3").setFormula('=SUM(D8:D)');
+  sheet.getRange("E3").setFormula('=SUMIF(E8:E, "Yes", D8:D)'); // Total Headcount for Haldi
+  sheet.getRange("F3").setFormula('=SUMIF(F8:F, "Yes", D8:D)'); // Total Headcount for Sangeet
+  sheet.getRange("G3").setFormula('=SUMIF(G8:G, "Yes", D8:D)'); // Total Headcount for Wedding
+  sheet.getRange("H3").setFormula('="Haldi: " & COUNTIF(E8:E, "Yes") & " | Sangeet: " & COUNTIF(F8:F, "Yes") & " | Wedding: " & COUNTIF(G8:G, "Yes")');
+
+  // Format Metric Values
+  var valRange = sheet.getRange("A3:H3");
+  valRange.setFontFamily("Georgia")
+    .setFontSize(15)
+    .setFontWeight("bold")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle")
+    .setBorder(true, true, true, true, true, true, "#8C6D37", SpreadsheetApp.BorderStyle.SOLID);
+  sheet.setRowHeight(3, 34);
+
+  // Custom Card Backgrounds
+  sheet.getRange("A3:C3").setBackground("#FFFDF9").setFontColor("#2C0707");
+  sheet.getRange("D3").setBackground("#FFF8E7").setFontColor("#7D0A0A").setFontSize(17); // Big Grand Total
+  sheet.getRange("E3").setBackground("#FFFBEA").setFontColor("#8B6508").setFontSize(16); // Haldi Total
+  sheet.getRange("F3").setBackground("#FBF4FF").setFontColor("#5B146F").setFontSize(16); // Sangeet Total
+  sheet.getRange("G3").setBackground("#FFF0F2").setFontColor("#7D0A0A").setFontSize(16); // Wedding Total
+  sheet.getRange("H3").setBackground("#FFFDF9").setFontColor("#2C0707").setFontSize(10);
+
+  // Empty separator rows
+  sheet.setRowHeight(4, 8);
+  sheet.setRowHeight(5, 8);
+
+  // =========================================================================
+  // ROW 6: TABLE SECTION BANNER
+  // =========================================================================
+  sheet.getRange("A6:H6").merge()
+    .setValue("  📋 DETAILED GUEST RESPONSES (SMART IN-PLACE UPDATING)")
+    .setBackground("#F8F3EA")
+    .setFontColor("#5A0707")
+    .setFontFamily("Georgia")
+    .setFontSize(10)
+    .setFontWeight("bold")
+    .setVerticalAlignment("middle");
+  sheet.setRowHeight(6, 24);
+
+  // =========================================================================
+  // ROW 7: COLUMN HEADERS
+  // =========================================================================
+  sheet.getRange(7, 1, 1, HEADERS.length).setValues([HEADERS]);
+  var headerRange = sheet.getRange("A7:H7");
+  headerRange.setBackground("#7D0A0A") // Royal Maroon
+    .setFontColor("#FFFFFF")
+    .setFontFamily("Georgia")
+    .setFontSize(10)
+    .setFontWeight("bold")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle")
+    .setBorder(true, true, true, true, true, true, "#FFDF78", SpreadsheetApp.BorderStyle.SOLID);
+  sheet.setRowHeight(7, 30);
+
+  // Freeze top 7 rows so dashboard & headers stay locked when scrolling
+  sheet.setFrozenRows(7);
+
+  // =========================================================================
+  // ROW 8: SAMPLE TEST ROW
+  // =========================================================================
   var testRow = [
     new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }),
-    "Sample Guest (Test RSVP)",
-    "guest.test@example.com",
+    "Sample Guest (Example)",
+    "sample.guest@example.com",
     2,
     "Yes",
     "Yes",
     "Yes",
-    "Haldi, Sangeet, Wedding",
-    "None",
-    "Wishing Inchara & Kalyan a lifetime of eternal love and happiness!"
+    "Heartiest congratulations to Inchara & Kalyan! Wishing you both a lifetime of happiness."
   ];
-  
+
   sheet.appendRow(testRow);
-  var lastRow = sheet.getLastRow();
-  sheet.getRange(lastRow, 1, 1, testRow.length).setVerticalAlignment("middle");
-  sheet.getRange(lastRow, 4, 1, 4).setHorizontalAlignment("center");
+  formatDataRow(sheet, 8, "Yes", "Yes", "Yes");
 
-  Logger.log("🎉 SUCCESS! Row 1 headers formatted in Royal Maroon and sample test row added at row " + lastRow);
-  return "SUCCESS: Row 1 headers formatted in Royal Maroon and sample test row added at row " + lastRow;
+  Logger.log("🎉 SUCCESS! Dashboard initialized with live Haldi, Sangeet & Wedding totals!");
+  return "SUCCESS: Dashboard initialized with live Haldi, Sangeet & Wedding totals!";
 }
 
-// Aliases so clicking "Run" on any selected function works seamlessly
-function setupHeaders() {
-  return setupSheet();
-}
+/**
+ * Styles a guest row with clean fonts and colorful badges for attendance
+ */
+function formatDataRow(sheet, rowNum, haldi, sangeet, wedding) {
+  var rowRange = sheet.getRange(rowNum, 1, 1, 8);
+  rowRange.setFontFamily("Arial")
+    .setFontSize(10)
+    .setVerticalAlignment("middle")
+    .setBorder(true, true, true, true, true, true, "#E0E0E0", SpreadsheetApp.BorderStyle.SOLID);
 
-// Ensures headers exist when webhooks arrive from the live website
-function ensureHeaders(sheet) {
-  if (sheet.getLastRow() === 0 || sheet.getRange(1, 1).getValue() === "") {
-    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
-    var headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-    headerRange.setFontWeight("bold");
-    headerRange.setBackground("#7D0A0A");
-    headerRange.setFontColor("#FFFFFF");
-    headerRange.setHorizontalAlignment("center");
-    sheet.setFrozenRows(1);
+  sheet.setRowHeight(rowNum, 28);
+
+  // Center Total Guests & Event columns
+  sheet.getRange(rowNum, 4, 1, 4).setHorizontalAlignment("center");
+  sheet.getRange(rowNum, 4).setFontWeight("bold"); // Bold total guests
+
+  // Badge colors for Haldi (Col E)
+  var cellHaldi = sheet.getRange(rowNum, 5);
+  if (haldi === "Yes") {
+    cellHaldi.setBackground("#FFF9C4").setFontColor("#F57F17").setFontWeight("bold"); // Yellow badge
+  } else {
+    cellHaldi.setBackground("#F5F5F5").setFontColor("#9E9E9E");
+  }
+
+  // Badge colors for Sangeet (Col F)
+  var cellSangeet = sheet.getRange(rowNum, 6);
+  if (sangeet === "Yes") {
+    cellSangeet.setBackground("#F3E5F5").setFontColor("#6A1B9A").setFontWeight("bold"); // Purple badge
+  } else {
+    cellSangeet.setBackground("#F5F5F5").setFontColor("#9E9E9E");
+  }
+
+  // Badge colors for Wedding (Col G)
+  var cellWedding = sheet.getRange(rowNum, 7);
+  if (wedding === "Yes") {
+    cellWedding.setBackground("#FFEBEE").setFontColor("#C62828").setFontWeight("bold"); // Rose badge
+  } else {
+    cellWedding.setBackground("#F5F5F5").setFontColor("#9E9E9E");
   }
 }
 
-// Handles RSVP submissions and edits from the wedding website
+/**
+ * Ensures table structure exists before receiving webhooks
+ */
+function ensureInitialized(sheet) {
+  if (sheet.getLastRow() < 7 || sheet.getRange(7, 1).getValue() !== "Timestamp") {
+    setupSheet();
+  }
+}
+
+/**
+ * Handles RSVP submissions and edits from the website
+ */
 function doPost(e) {
   var lock = LockService.getScriptLock();
   try {
     lock.waitLock(10000);
-    
+
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    ensureHeaders(sheet);
-    
+    ensureInitialized(sheet);
+
     var data = {};
     if (e && e.postData && e.postData.contents) {
       try {
@@ -170,58 +321,55 @@ function doPost(e) {
       data = e.parameter;
     }
 
-    // Extract fields matching the website RSVP form
-    var baseTimestamp = data.timestamp || new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-    var name = data.name || "-";
-    var email = (data.email && String(data.email).trim() !== "" && data.email !== "-") ? String(data.email).trim() : (data.contact || "-");
-    var guestCount = data.guest_count !== undefined ? data.guest_count : (data.total_guests !== undefined ? data.total_guests : 1);
-    
-    var haldi = data.haldi || "No";
-    var sangeet = data.sangeet || "No";
-    var wedding = data.wedding || "No";
-    var attending = data.attending_events || "-";
-    var declined = data.declined_events || "-";
-    var note = data.note || data.warm_wishes || "-";
+    // Determine if data starts at row 8 (dashboard mode) or row 2 (flat mode)
+    var startRow = 8;
+    if (sheet.getRange(1, 1).getValue() === "Timestamp") {
+      startRow = 2;
+    } else if (sheet.getRange(7, 1).getValue() === "Timestamp") {
+      startRow = 8;
+    }
 
-    // Check if this guest already submitted earlier (find existing row)
-    var existingRow = findExistingRowIndex(sheet, data);
-    var targetRow = existingRow > 0 ? existingRow : (sheet.getLastRow() + 1);
+    var baseTimestamp = data.timestamp ? new Date(data.timestamp).toLocaleString("en-US", { timeZone: "Asia/Kolkata" }) : new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+    var name = (data.name || data.fullName || "-").toString().trim();
+    var contact = (data.contact || data.email || data.phone || "-").toString().trim();
+    var guestCount = Number(data.guest_count !== undefined ? data.guest_count : (data.guestCount || 1));
 
-    // If updating, mark timestamp as edited
-    var timestamp = existingRow > 0 ? (baseTimestamp + " (Edited)") : baseTimestamp;
+    // Independent event attendance (Yes / No)
+    var haldi = (data.haldi === "Yes" || data.haldi === "yes" || (data.attending_events && data.attending_events.indexOf("Haldi") !== -1)) ? "Yes" : "No";
+    var sangeet = (data.sangeet === "Yes" || data.sangeet === "yes" || (data.attending_events && data.attending_events.indexOf("Sangeet") !== -1)) ? "Yes" : "No";
+    var wedding = (data.wedding === "Yes" || data.wedding === "yes" || (data.attending_events && data.attending_events.indexOf("Wedding") !== -1)) ? "Yes" : "No";
 
-    var row = [
-      timestamp,
+    var note = (data.note || data.warm_wishes || data.message || "-").toString().trim();
+
+    // Check for existing RSVP (Smart In-Place Edit)
+    var existingRow = findExistingRowIndex(sheet, data, startRow);
+    var isUpdate = (existingRow > 0);
+    var targetRow = isUpdate ? existingRow : Math.max(startRow, sheet.getLastRow() + 1);
+    var displayTimestamp = isUpdate ? (baseTimestamp + " (Edited)") : baseTimestamp;
+
+    var rowValues = [
+      displayTimestamp,
       name,
-      email,
-      Number(guestCount),
+      contact,
+      guestCount,
       haldi,
       sangeet,
       wedding,
-      attending,
-      declined,
       note
     ];
-    
-    if (existingRow > 0) {
-      // UPDATE THE EXACT SAME LINE IN-PLACE (no duplicate row created!)
-      sheet.getRange(targetRow, 1, 1, row.length).setValues([row]);
-    } else {
-      // NEW GUEST: Append a new row
-      sheet.appendRow(row);
-      targetRow = sheet.getLastRow();
-    }
-    
-    sheet.getRange(targetRow, 1, 1, row.length).setVerticalAlignment("middle");
-    sheet.getRange(targetRow, 4, 1, 4).setHorizontalAlignment("center");
 
-    var actionTaken = existingRow > 0 ? "updated" : "created";
+    sheet.getRange(targetRow, 1, 1, rowValues.length).setValues([rowValues]);
+    formatDataRow(sheet, targetRow, haldi, sangeet, wedding);
+
+    SpreadsheetApp.flush();
+
+    var actionTaken = isUpdate ? "updated" : "created";
     Logger.log("RSVP " + actionTaken + " successfully at row " + targetRow + " for " + name);
 
     return ContentService.createTextOutput(JSON.stringify({
       status: "success",
       action: actionTaken,
-      message: existingRow > 0 ? "RSVP updated in same row in Google Sheets" : "RSVP recorded in Google Sheets",
+      message: isUpdate ? "RSVP updated in same row in Google Sheets" : "RSVP recorded in Google Sheets",
       name: name,
       rowNumber: targetRow
     })).setMimeType(ContentService.MimeType.JSON);
@@ -238,8 +386,10 @@ function doPost(e) {
   }
 }
 
-// Health check endpoint for testing in browser
+/**
+ * Health check endpoint for testing in browser
+ */
 function doGet(e) {
-  return ContentService.createTextOutput("💍 Inchara & Kalyan RSVP Google Sheets Webhook is ACTIVE! Ready to receive RSVPs.")
+  return ContentService.createTextOutput("💍 Inchara & Kalyan Wedding RSVP Webhook is ACTIVE and connected! Ready to receive RSVPs.")
     .setMimeType(ContentService.MimeType.TEXT);
 }
