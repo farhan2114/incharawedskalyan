@@ -83,13 +83,13 @@ export const EventsSection: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Automatic carousel rotation every 4.5 seconds (pauses on hover or when modal is open)
+  // Automatic carousel rotation every 2.8 seconds (pauses on hover or when modal is open)
   useEffect(() => {
     if (isPaused || activeModalEvent) return;
 
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % 3);
-    }, 4500);
+    }, 2800);
 
     return () => clearInterval(timer);
   }, [isPaused, activeModalEvent]);
@@ -128,7 +128,6 @@ export const EventsSection: React.FC = () => {
         transform: 'translate(-50%, -50%) translate3d(0, 0, 0) rotateY(0deg) scale(1)',
         opacity: 1,
         zIndex: 30,
-        filter: 'none',
         pointerEvents: 'auto' as const,
       };
     } else if (diff === -1) {
@@ -138,7 +137,6 @@ export const EventsSection: React.FC = () => {
           : 'translate(-50%, -50%) translate3d(-34%, 0, -120px) rotateY(20deg) scale(0.90)',
         opacity: 0.42,
         zIndex: 10,
-        filter: 'blur(0.5px)',
         pointerEvents: 'auto' as const,
       };
     } else {
@@ -148,7 +146,6 @@ export const EventsSection: React.FC = () => {
           : 'translate(-50%, -50%) translate3d(34%, 0, -120px) rotateY(-20deg) scale(0.90)',
         opacity: 0.42,
         zIndex: 10,
-        filter: 'blur(0.5px)',
         pointerEvents: 'auto' as const,
       };
     }
@@ -162,63 +159,63 @@ export const EventsSection: React.FC = () => {
 
       // Center massive cloudburst
       confetti({
-        particleCount: 160,
+        particleCount: 95,
         spread: 360,
-        startVelocity: 48,
+        startVelocity: 44,
         ticks: 240,
         gravity: 0.65,
         origin: { x: 0.5, y: 0.45 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.35,
+        scalar: 1.3,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Left edge cannon sweeping across full screen
       confetti({
-        particleCount: 90,
+        particleCount: 60,
         angle: 60,
-        spread: 85,
-        startVelocity: 55,
-        ticks: 260,
+        spread: 80,
+        startVelocity: 50,
+        ticks: 240,
         gravity: 0.6,
         origin: { x: 0.05, y: 0.65 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.2,
+        scalar: 1.15,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Right edge cannon sweeping across full screen
       confetti({
-        particleCount: 90,
+        particleCount: 60,
         angle: 120,
-        spread: 85,
-        startVelocity: 55,
-        ticks: 260,
+        spread: 80,
+        startVelocity: 50,
+        ticks: 240,
         gravity: 0.6,
         origin: { x: 0.95, y: 0.65 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.2,
+        scalar: 1.15,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Top cloud mist showering downwards
       confetti({
-        particleCount: 80,
+        particleCount: 50,
         angle: 90,
         spread: 180,
-        startVelocity: 25,
-        ticks: 280,
+        startVelocity: 22,
+        ticks: 260,
         gravity: 0.45,
         origin: { x: 0.5, y: 0.05 },
         colors: ['#FEF08A', '#FDE047', '#EAB308', '#FFFFFF'],
         shapes: ['circle'],
-        scalar: 1.6,
+        scalar: 1.5,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
@@ -229,58 +226,58 @@ export const EventsSection: React.FC = () => {
 
       // Center explosion of notes
       confetti({
-        particleCount: 110,
+        particleCount: 75,
         spread: 360,
-        startVelocity: 48,
-        ticks: 260,
+        startVelocity: 44,
+        ticks: 240,
         gravity: 0.55,
         origin: { x: 0.5, y: 0.45 },
         colors: musicalColors,
         shapes: musicShapes,
-        scalar: 2.1,
+        scalar: 2.0,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Left cannon notes sweeping right
       confetti({
-        particleCount: 75,
+        particleCount: 50,
         angle: 60,
-        spread: 80,
-        startVelocity: 52,
-        ticks: 280,
+        spread: 75,
+        startVelocity: 48,
+        ticks: 260,
         gravity: 0.5,
         origin: { x: 0.05, y: 0.7 },
         colors: musicalColors,
         shapes: musicShapes,
-        scalar: 2.0,
+        scalar: 1.9,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Right cannon notes sweeping left
       confetti({
-        particleCount: 75,
+        particleCount: 50,
         angle: 120,
-        spread: 80,
-        startVelocity: 52,
-        ticks: 280,
+        spread: 75,
+        startVelocity: 48,
+        ticks: 260,
         gravity: 0.5,
         origin: { x: 0.95, y: 0.7 },
         colors: musicalColors,
         shapes: musicShapes,
-        scalar: 2.0,
+        scalar: 1.9,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Top sparkling beats cascading down
       confetti({
-        particleCount: 70,
+        particleCount: 45,
         angle: 90,
         spread: 180,
-        startVelocity: 30,
-        ticks: 300,
+        startVelocity: 28,
+        ticks: 280,
         gravity: 0.42,
         origin: { x: 0.5, y: 0.05 },
         colors: ['#FDE047', '#F472B6', '#C084FC', '#FFFFFF'],
@@ -297,63 +294,63 @@ export const EventsSection: React.FC = () => {
 
       // Center explosion of petals
       confetti({
-        particleCount: 110,
+        particleCount: 80,
         spread: 360,
-        startVelocity: 42,
-        ticks: 300,
+        startVelocity: 40,
+        ticks: 280,
         gravity: 0.45,
         origin: { x: 0.5, y: 0.45 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 2.3,
+        scalar: 2.2,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Left cannon rose petals
       confetti({
-        particleCount: 80,
+        particleCount: 50,
         angle: 60,
-        spread: 80,
-        startVelocity: 50,
-        ticks: 320,
+        spread: 75,
+        startVelocity: 46,
+        ticks: 300,
         gravity: 0.45,
         origin: { x: 0.05, y: 0.65 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 2.1,
+        scalar: 2.0,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Right cannon rose petals
       confetti({
-        particleCount: 80,
+        particleCount: 50,
         angle: 120,
-        spread: 80,
-        startVelocity: 50,
-        ticks: 320,
+        spread: 75,
+        startVelocity: 46,
+        ticks: 300,
         gravity: 0.45,
         origin: { x: 0.95, y: 0.65 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 2.1,
+        scalar: 2.0,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Top gentle curtain of rose petals raining down
       confetti({
-        particleCount: 100,
+        particleCount: 65,
         angle: 90,
         spread: 180,
-        startVelocity: 26,
-        ticks: 340,
+        startVelocity: 24,
+        ticks: 320,
         gravity: 0.38,
         origin: { x: 0.5, y: 0.0 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 1.9,
+        scalar: 1.8,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
@@ -366,11 +363,9 @@ export const EventsSection: React.FC = () => {
 
     triggerThemedSplash(themeKey);
 
-    // Show the unfolded 3D card as the splash peaks across the screen
-    setTimeout(() => {
-      setActiveModalEvent(event);
-      setTimeout(() => setSplashTheme(null), 350);
-    }, 380);
+    // Show the unfolded 3D card immediately without sticky delay
+    setActiveModalEvent(event);
+    setTimeout(() => setSplashTheme(null), 500);
   };
 
   // Close modal on Escape key
@@ -548,7 +543,10 @@ export const EventsSection: React.FC = () => {
                 style={{
                   ...style,
                   transition:
-                    'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease, filter 0.55s ease, box-shadow 0.55s ease',
+                    'transform 0.48s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, box-shadow 0.45s ease',
+                  willChange: 'transform, opacity',
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
                 }}
                 className={`group absolute top-1/2 left-1/2 w-[92%] xs:w-[90%] sm:w-[86%] md:w-[88%] max-w-5xl h-[260px] xs:h-[290px] sm:h-[400px] md:h-[440px] overflow-hidden rounded-[24px] sm:rounded-[36px] border-[2.5px] sm:border-[3px] border-[#D4AF37] ring-1 ring-[#FFF2B2]/60 shadow-[0_16px_44px_rgba(212,175,55,0.28)] bg-[#1A050A] cursor-pointer ${
                   isCenter ? 'hover:shadow-[0_24px_60px_rgba(212,175,55,0.45)]' : 'hover:opacity-75'
@@ -678,7 +676,13 @@ export const EventsSection: React.FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ transformOrigin: 'top center', transformStyle: 'preserve-3d' }}
+            style={{
+              transformOrigin: 'top center',
+              transformStyle: 'preserve-3d',
+              willChange: 'transform, opacity',
+              backfaceVisibility: 'hidden',
+              WebkitBackfaceVisibility: 'hidden',
+            }}
             className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-[0_25px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(212,175,55,0.3)] animate-card-fold-in"
           >
             {/* 3D Folding Card Top Seam & Pull Tab */}
