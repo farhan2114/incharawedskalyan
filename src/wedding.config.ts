@@ -170,7 +170,7 @@ the union of two hearts`,
     supabaseTable: 'rsvps',
 
     // Google Sheets Webhook URL (paste deployed Google Apps Script URL here)
-    googleSheetWebhookUrl: 'https://script.google.com/macros/s/AKfycbwLV_52cSrJPWpsMfFJrY4xZ-3iCV8WPR5612i-v9qB_koaaX1u6QfOU3tq5fDLq1b-Mg/exec',
+    googleSheetWebhookUrl: 'https://script.google.com/macros/s/AKfycbwKkoulwjkYFhAk85oQahKspnCOdzQYo6wmgz5BltsHmc4-LiEDW4V_FTr5PIZe2W7D/exec',
   },
 };
 

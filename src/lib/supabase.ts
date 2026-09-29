@@ -13,7 +13,7 @@ const SUPABASE_KEY = 'sb_publishable_7USKYo1sBAT7p3_kqWdrqg_RCxNm3yd';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-export const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwLV_52cSrJPWpsMfFJrY4xZ-3iCV8WPR5612i-v9qB_koaaX1u6QfOU3tq5fDLq1b-Mg/exec';
+export const GOOGLE_SHEET_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwKkoulwjkYFhAk85oQahKspnCOdzQYo6wmgz5BltsHmc4-LiEDW4V_FTr5PIZe2W7D/exec';
 
 export interface RsvpPayload {
   name: string;
