@@ -124,7 +124,7 @@ def create_banner():
 
     bride_img_path = 'public/client-images/bride.jpg'
     b_raw = Image.open(bride_img_path)
-    b_box = (0, 0, b_raw.width, int(b_raw.height * 0.72))
+    b_box = (int(b_raw.width * 0.08), int(b_raw.height * 0.13), int(b_raw.width * 0.92), int(b_raw.height * 0.82))
     draw_portrait_card(bride_img_path, 'Inchara Shetty', 'The Bride', start_x, card_top, b_box)
 
     groom_img_path = 'public/client-images/groom.jpg'
