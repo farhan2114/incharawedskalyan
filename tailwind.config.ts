@@ -89,13 +89,25 @@ export default {
         },
         'card-swipe-in': {
           '0%': {
-            opacity: '0',
-            transform: 'translate3d(0, 52px, 0) scale(0.95)',
+            opacity: '0.5',
+            transform: 'translate3d(0, 65vh, 0) scale(0.92)',
+          },
+          '65%': {
+            opacity: '1',
+            transform: 'translate3d(0, -8px, 0) scale(1.01)',
           },
           '100%': {
             opacity: '1',
             transform: 'translate3d(0, 0, 0) scale(1)',
           },
+        },
+        'slide-in-right': {
+          '0%': { opacity: '0.4', transform: 'translate3d(70px, 0, 0)' },
+          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
+        },
+        'slide-in-left': {
+          '0%': { opacity: '0.4', transform: 'translate3d(-70px, 0, 0)' },
+          '100%': { opacity: '1', transform: 'translate3d(0, 0, 0)' },
         },
       },
       animation: {
@@ -107,7 +119,9 @@ export default {
         'fade-in': '0.2s ease-out forwards fade-in',
         'scale-up': '0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards scale-up',
         'card-fold-in': '0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards card-fold-in',
-        'card-swipe-in': '0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards card-swipe-in',
+        'card-swipe-in': '0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards card-swipe-in',
+        'slide-in-right': '0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards slide-in-right',
+        'slide-in-left': '0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards slide-in-left',
       },
     },
   },

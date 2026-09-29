@@ -25,10 +25,43 @@ export interface RsvpPayload {
   sangeet?: 'Yes' | 'No';
   wedding?: 'Yes' | 'No';
   note: string;
+  isUpdate?: boolean;
+  originalEmail?: string;
+  originalName?: string;
+  submissionId?: string;
 }
 
 export async function saveRsvpToSupabase(payload: RsvpPayload): Promise<{ success: boolean; error?: string }> {
   try {
+    // If this is an update, find and update the existing row instead of inserting a duplicate
+    if (payload.isUpdate && (payload.originalEmail || payload.email)) {
+      const matchKey = payload.originalEmail || payload.email;
+      const { data: existing } = await supabase
+        .from('rsvps')
+        .select('id')
+        .eq('email', matchKey)
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        const { error: updateError } = await supabase
+          .from('rsvps')
+          .update({
+            name: payload.name,
+            email: payload.email,
+            guest_count: payload.guest_count,
+            attending_events: payload.attending_events,
+            declined_events: payload.declined_events,
+            note: payload.note,
+          })
+          .eq('id', existing[0].id);
+
+        if (!updateError) {
+          return { success: true };
+        }
+      }
+    }
+
+    // Default: Insert new row
     const { error } = await supabase.from('rsvps').insert([{
       name: payload.name,
       email: payload.email,
@@ -37,6 +70,7 @@ export async function saveRsvpToSupabase(payload: RsvpPayload): Promise<{ succes
       declined_events: payload.declined_events,
       note: payload.note,
     }]);
+
     if (error) {
       console.warn('Supabase RSVP insert error:', error);
       return { success: false, error: error.message };
@@ -49,16 +83,25 @@ export async function saveRsvpToSupabase(payload: RsvpPayload): Promise<{ succes
 }
 
 export async function saveRsvpToGoogleSheet(payload: RsvpPayload): Promise<void> {
+  const webhookUrl = GOOGLE_SHEET_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
   try {
-    await fetch(GOOGLE_SHEET_WEBHOOK_URL, {
+    await fetch(webhookUrl, {
       method: 'POST',
       mode: 'no-cors',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        action: payload.isUpdate ? 'update' : 'create',
+        isUpdate: !!payload.isUpdate,
+        submissionId: payload.submissionId || '',
+        originalEmail: payload.originalEmail || payload.email,
+        originalName: payload.originalName || payload.name,
         name: payload.name,
         email: payload.email,
+        contact: payload.email,
         guest_count: payload.guest_count,
         attending_events: payload.attending_events,
         declined_events: payload.declined_events,
@@ -66,6 +109,7 @@ export async function saveRsvpToGoogleSheet(payload: RsvpPayload): Promise<void>
         sangeet: payload.sangeet || 'No',
         wedding: payload.wedding || 'No',
         note: payload.note || '-',
+        timestamp: new Date().toISOString(),
       }),
     });
   } catch (err) {

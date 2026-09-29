@@ -13,6 +13,9 @@ interface RsvpData {
   attendance: AttendanceMap;
   note: string;
   submittedAt: string;
+  submissionId?: string;
+  originalContact?: string;
+  originalName?: string;
 }
 
 const STORAGE_KEY = "rsvp_submission_inchara_kalyan";
@@ -28,10 +31,19 @@ export const RsvpSection: React.FC = () => {
   );
   const [note, setNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [originalContact, setOriginalContact] = useState("");
+  const [originalName, setOriginalName] = useState("");
+  const [submissionId, setSubmissionId] = useState("");
+
   const [submitted, setSubmitted] = useState<RsvpData | null>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? (JSON.parse(saved) as RsvpData) : null;
+      if (saved) {
+        const parsed = JSON.parse(saved) as RsvpData;
+        return parsed;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -73,6 +85,13 @@ export const RsvpSection: React.FC = () => {
       .map((ev) => ev.name)
       .join(", ");
 
+    const currentSubmissionId =
+      submissionId ||
+      submitted?.submissionId ||
+      `rsvp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const prevContact = originalContact || contact.trim();
+    const prevName = originalName || name.trim();
+
     const data: RsvpData = {
       name: name.trim(),
       contact: contact.trim(),
@@ -80,6 +99,9 @@ export const RsvpSection: React.FC = () => {
       attendance,
       note: note.trim(),
       submittedAt: new Date().toISOString(),
+      submissionId: currentSubmissionId,
+      originalContact: prevContact,
+      originalName: prevName,
     };
 
     setIsSubmitting(true);
@@ -93,8 +115,15 @@ export const RsvpSection: React.FC = () => {
       sangeet: attendance["Sangeet"] === "attending" ? "Yes" : "No",
       wedding: attendance["Wedding"] === "attending" ? "Yes" : "No",
       note: data.note || "",
+      isUpdate: isEditing,
+      originalEmail: prevContact,
+      originalName: prevName,
+      submissionId: currentSubmissionId,
     });
     setIsSubmitting(false);
+    setIsEditing(false);
+    setOriginalContact(data.contact);
+    setOriginalName(data.name);
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -112,8 +141,14 @@ export const RsvpSection: React.FC = () => {
     setGuestCount(submitted.guestCount);
     setAttendance(submitted.attendance);
     setNote(submitted.note);
+    setOriginalContact(submitted.originalContact || submitted.contact);
+    setOriginalName(submitted.originalName || submitted.name);
+    setSubmissionId(
+      submitted.submissionId ||
+      `rsvp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+    );
+    setIsEditing(true);
     setSubmitted(null);
-    localStorage.removeItem(STORAGE_KEY);
   };
 
   const inputClass =
@@ -195,6 +230,22 @@ export const RsvpSection: React.FC = () => {
                 onSubmit={handleSubmit}
                 className="paper-card mx-auto max-w-2xl px-7 py-10 sm:px-12 sm:py-14"
               >
+                {isEditing && (
+                  <div className="mb-6 flex items-center justify-between rounded-xl border border-gold/40 bg-gold/10 px-4 py-2.5 text-xs text-gold-deep">
+                    <span className="font-serif">✏️ Updating your existing response (same row will be updated)</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const saved = localStorage.getItem(STORAGE_KEY);
+                        if (saved) setSubmitted(JSON.parse(saved));
+                        setIsEditing(false);
+                      }}
+                      className="underline hover:text-foreground ml-2 text-[11px]"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
                 <div className="grid gap-6 sm:grid-cols-2">
                   <input
                     className={inputClass}
@@ -305,7 +356,7 @@ export const RsvpSection: React.FC = () => {
                   disabled={isSubmitting}
                   className="mt-9 w-full border border-gold/60 py-4 text-[0.7rem] uppercase tracking-[0.3em] text-gold transition-colors hover:bg-gold/10 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? "Submitting RSVP..." : "Submit RSVP"}
+                  {isSubmitting ? (isEditing ? "Updating RSVP..." : "Submitting RSVP...") : isEditing ? "Update RSVP Response" : "Submit RSVP"}
                 </button>
               </form>
             </RevealOnScroll>

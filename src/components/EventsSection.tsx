@@ -118,6 +118,68 @@ export const EventsSection: React.FC = () => {
   const nextEvent = () => setActiveIndex((prev) => (prev + 1) % 3);
   const prevEvent = () => setActiveIndex((prev) => (prev - 1 + 3) % 3);
 
+  const [modalSwipeDirection, setModalSwipeDirection] = useState<'left' | 'right' | null>(null);
+  const modalTouchStartX = useRef<number | null>(null);
+  const modalTouchStartY = useRef<number | null>(null);
+
+  const handleModalTouchStart = (e: React.TouchEvent) => {
+    modalTouchStartX.current = e.touches[0].clientX;
+    modalTouchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleModalTouchEnd = (e: React.TouchEvent) => {
+    if (modalTouchStartX.current === null || modalTouchStartY.current === null || !activeModalEvent) return;
+    const deltaX = e.changedTouches[0].clientX - modalTouchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - modalTouchStartY.current;
+
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) {
+        goToNextModalEvent();
+      } else {
+        goToPrevModalEvent();
+      }
+    }
+    modalTouchStartX.current = null;
+    modalTouchStartY.current = null;
+  };
+
+  const goToNextModalEvent = () => {
+    if (!activeModalEvent) return;
+    const currentIdx = events.findIndex((e) => e.name === activeModalEvent.name);
+    const nextIdx = (currentIdx + 1) % events.length;
+    const nextEv = events[nextIdx];
+    setModalSwipeDirection('right');
+    setActiveModalEvent(nextEv);
+    setActiveIndex(nextIdx);
+    triggerThemedSplash(nextEv.id || 'haldi');
+    setTimeout(() => setModalSwipeDirection(null), 300);
+  };
+
+  const goToPrevModalEvent = () => {
+    if (!activeModalEvent) return;
+    const currentIdx = events.findIndex((e) => e.name === activeModalEvent.name);
+    const prevIdx = (currentIdx - 1 + events.length) % events.length;
+    const prevEv = events[prevIdx];
+    setModalSwipeDirection('left');
+    setActiveModalEvent(prevEv);
+    setActiveIndex(prevIdx);
+    triggerThemedSplash(prevEv.id || 'haldi');
+    setTimeout(() => setModalSwipeDirection(null), 300);
+  };
+
+  const switchModalEvent = (targetIdx: number) => {
+    if (!activeModalEvent) return;
+    const currentIdx = events.findIndex((e) => e.name === activeModalEvent.name);
+    if (currentIdx === targetIdx) return;
+    const dir = targetIdx > currentIdx ? 'right' : 'left';
+    const nextEv = events[targetIdx];
+    setModalSwipeDirection(dir);
+    setActiveModalEvent(nextEv);
+    setActiveIndex(targetIdx);
+    triggerThemedSplash(nextEv.id || 'haldi');
+    setTimeout(() => setModalSwipeDirection(null), 300);
+  };
+
   const getCardTransform = (idx: number, total: number) => {
     let diff = idx - activeIndex;
     if (diff > total / 2) diff -= total;
@@ -153,205 +215,256 @@ export const EventsSection: React.FC = () => {
 
   const triggerThemedSplash = (themeKey: string) => {
     if (themeKey === 'haldi') {
-      const turmericColors = ['#FFB703', '#FB8500', '#F59E0B', '#EAB308', '#FDE047', '#FEF08A', '#D97706', '#FFFBEB', '#FFD700'];
+      const turmericColors = ['#FFB703', '#FB8500', '#F59E0B', '#EAB308', '#FDE047', '#FEF08A', '#D97706', '#FFFBEB', '#FFD700', '#FFFFFF'];
 
-      // Center massive cloudburst
+      // Wave 1: Center massive cloudburst
       confetti({
-        particleCount: 95,
+        particleCount: 160,
         spread: 360,
-        startVelocity: 44,
-        ticks: 240,
+        startVelocity: 50,
+        ticks: 280,
         gravity: 0.65,
         origin: { x: 0.5, y: 0.45 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.3,
+        scalar: 1.35,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Left edge cannon sweeping across full screen
       confetti({
-        particleCount: 60,
+        particleCount: 90,
         angle: 60,
-        spread: 80,
-        startVelocity: 50,
-        ticks: 240,
+        spread: 85,
+        startVelocity: 56,
+        ticks: 280,
         gravity: 0.6,
-        origin: { x: 0.05, y: 0.65 },
+        origin: { x: 0.04, y: 0.65 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.15,
+        scalar: 1.25,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Right edge cannon sweeping across full screen
       confetti({
-        particleCount: 60,
+        particleCount: 90,
         angle: 120,
-        spread: 80,
-        startVelocity: 50,
-        ticks: 240,
+        spread: 85,
+        startVelocity: 56,
+        ticks: 280,
         gravity: 0.6,
-        origin: { x: 0.95, y: 0.65 },
+        origin: { x: 0.96, y: 0.65 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.15,
+        scalar: 1.25,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Top cloud mist showering downwards
       confetti({
-        particleCount: 50,
+        particleCount: 85,
         angle: 90,
         spread: 180,
-        startVelocity: 22,
-        ticks: 260,
+        startVelocity: 26,
+        ticks: 300,
         gravity: 0.45,
-        origin: { x: 0.5, y: 0.05 },
+        origin: { x: 0.5, y: 0.04 },
         colors: ['#FEF08A', '#FDE047', '#EAB308', '#FFFFFF'],
         shapes: ['circle'],
-        scalar: 1.5,
+        scalar: 1.6,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
+      // Wave 2: Secondary golden sparkles & burst
+      setTimeout(() => {
+        confetti({
+          particleCount: 110,
+          spread: 360,
+          startVelocity: 42,
+          ticks: 260,
+          gravity: 0.55,
+          origin: { x: 0.5, y: 0.5 },
+          colors: ['#FFD700', '#FFF8DC', '#FFA500', '#FDE047'],
+          shapes: ['circle'],
+          scalar: 1.4,
+          zIndex: 99999,
+          disableForReducedMotion: true,
+        });
+      }, 140);
+
     } else if (themeKey === 'sangeet') {
       const musicShapes = getCachedMusicShapes();
-      const musicalColors = ['#E11D48', '#C026D3', '#9333EA', '#F43F5E', '#F59E0B', '#FDE047', '#A855F7', '#38BDF8'];
+      const musicalColors = ['#E11D48', '#C026D3', '#9333EA', '#F43F5E', '#F59E0B', '#FDE047', '#A855F7', '#38BDF8', '#FFFFFF'];
 
-      // Center explosion of notes
+      // Wave 1: Center explosion of notes
       confetti({
-        particleCount: 75,
+        particleCount: 130,
         spread: 360,
-        startVelocity: 44,
-        ticks: 240,
+        startVelocity: 50,
+        ticks: 280,
         gravity: 0.55,
         origin: { x: 0.5, y: 0.45 },
         colors: musicalColors,
         shapes: musicShapes,
-        scalar: 2.0,
+        scalar: 2.1,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Left cannon notes sweeping right
       confetti({
-        particleCount: 50,
+        particleCount: 80,
         angle: 60,
-        spread: 75,
-        startVelocity: 48,
-        ticks: 260,
+        spread: 80,
+        startVelocity: 54,
+        ticks: 290,
         gravity: 0.5,
-        origin: { x: 0.05, y: 0.7 },
+        origin: { x: 0.04, y: 0.68 },
         colors: musicalColors,
         shapes: musicShapes,
-        scalar: 1.9,
+        scalar: 2.0,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Right cannon notes sweeping left
       confetti({
-        particleCount: 50,
+        particleCount: 80,
         angle: 120,
-        spread: 75,
-        startVelocity: 48,
-        ticks: 260,
+        spread: 80,
+        startVelocity: 54,
+        ticks: 290,
         gravity: 0.5,
-        origin: { x: 0.95, y: 0.7 },
+        origin: { x: 0.96, y: 0.68 },
         colors: musicalColors,
         shapes: musicShapes,
-        scalar: 1.9,
+        scalar: 2.0,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Top sparkling beats cascading down
       confetti({
-        particleCount: 45,
+        particleCount: 75,
         angle: 90,
         spread: 180,
-        startVelocity: 28,
-        ticks: 280,
+        startVelocity: 30,
+        ticks: 300,
         gravity: 0.42,
-        origin: { x: 0.5, y: 0.05 },
-        colors: ['#FDE047', '#F472B6', '#C084FC', '#FFFFFF'],
+        origin: { x: 0.5, y: 0.04 },
+        colors: ['#FDE047', '#F472B6', '#C084FC', '#38BDF8', '#FFFFFF'],
         shapes: ['circle', 'square'],
-        scalar: 1.2,
+        scalar: 1.3,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
+      // Wave 2: Secondary rhythm flurry
+      setTimeout(() => {
+        confetti({
+          particleCount: 95,
+          spread: 360,
+          startVelocity: 44,
+          ticks: 260,
+          gravity: 0.5,
+          origin: { x: 0.5, y: 0.5 },
+          colors: musicalColors,
+          shapes: musicShapes,
+          scalar: 2.2,
+          zIndex: 99999,
+          disableForReducedMotion: true,
+        });
+      }, 140);
+
     } else {
       // wedding: Rose Petals Shower
       const roseShapes = getCachedRoseShapes();
-      const roseColors = ['#991B1B', '#BE123C', '#E11D48', '#881337', '#FB7185', '#F43F5E', '#D4AF37', '#FFE4E6'];
+      const roseColors = ['#991B1B', '#BE123C', '#E11D48', '#881337', '#FB7185', '#F43F5E', '#D4AF37', '#FFE4E6', '#FFF1F2'];
 
-      // Center explosion of petals
+      // Wave 1: Center explosion of petals
       confetti({
-        particleCount: 80,
+        particleCount: 140,
         spread: 360,
-        startVelocity: 40,
-        ticks: 280,
+        startVelocity: 46,
+        ticks: 320,
         gravity: 0.45,
         origin: { x: 0.5, y: 0.45 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 2.2,
+        scalar: 2.3,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Left cannon rose petals
       confetti({
-        particleCount: 50,
+        particleCount: 90,
         angle: 60,
-        spread: 75,
-        startVelocity: 46,
-        ticks: 300,
+        spread: 80,
+        startVelocity: 52,
+        ticks: 320,
         gravity: 0.45,
-        origin: { x: 0.05, y: 0.65 },
+        origin: { x: 0.04, y: 0.65 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 2.0,
+        scalar: 2.1,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Right cannon rose petals
       confetti({
-        particleCount: 50,
+        particleCount: 90,
         angle: 120,
-        spread: 75,
-        startVelocity: 46,
-        ticks: 300,
+        spread: 80,
+        startVelocity: 52,
+        ticks: 320,
         gravity: 0.45,
-        origin: { x: 0.95, y: 0.65 },
+        origin: { x: 0.96, y: 0.65 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 2.0,
+        scalar: 2.1,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
 
       // Top gentle curtain of rose petals raining down
       confetti({
-        particleCount: 65,
+        particleCount: 105,
         angle: 90,
         spread: 180,
-        startVelocity: 24,
-        ticks: 320,
+        startVelocity: 26,
+        ticks: 340,
         gravity: 0.38,
         origin: { x: 0.5, y: 0.0 },
         colors: roseColors,
         shapes: roseShapes,
-        scalar: 1.8,
+        scalar: 1.9,
         zIndex: 99999,
         disableForReducedMotion: true,
       });
+
+      // Wave 2: Secondary shower of royal blossoms
+      setTimeout(() => {
+        confetti({
+          particleCount: 100,
+          spread: 360,
+          startVelocity: 38,
+          ticks: 320,
+          gravity: 0.4,
+          origin: { x: 0.5, y: 0.5 },
+          colors: roseColors,
+          shapes: roseShapes,
+          scalar: 2.3,
+          zIndex: 99999,
+          disableForReducedMotion: true,
+        });
+      }, 140);
     }
   };
 
@@ -546,20 +659,20 @@ export const EventsSection: React.FC = () => {
                 }`}
               >
                 {/* Dark Base Layer */}
-                <div className="absolute inset-0 bg-[#0D0205] z-0" />
+                <div className="absolute inset-0 bg-[#080103] z-0" />
 
-                {/* Full HD Background Image - Darker & Less Opaque */}
+                {/* Full HD Background Image - Darkened with Higher Opacity */}
                 <img
                   src={event.image}
                   alt={event.name}
                   loading="eager"
                   decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-35 sm:opacity-40 brightness-[0.72] contrast-[1.08] transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-45"
+                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-75 sm:opacity-85 brightness-[0.40] contrast-[1.18] transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-95"
                   style={{ imageRendering: 'auto' }}
                 />
 
                 {/* Subtle dark vignette overlay to make the image darker and text pop */}
-                <div className="absolute inset-0 bg-black/35 pointer-events-none z-[5]" />
+                <div className="absolute inset-0 bg-black/45 pointer-events-none z-[5]" />
 
                 {/* Seamless Linear Gradient matching the background image from left to right */}
                 <div
@@ -661,119 +774,174 @@ export const EventsSection: React.FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleModalTouchStart}
+            onTouchEnd={handleModalTouchEnd}
             style={{
               willChange: 'transform, opacity',
             }}
             className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-[0_25px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(212,175,55,0.3)] animate-card-swipe-in"
           >
-            {/* Modal Header Banner Image */}
-            <div className="relative h-48 sm:h-56 w-full overflow-hidden">
-              <img
-                src={activeModalEvent.image}
-                alt={activeModalEvent.name}
-                className="h-full w-full object-cover object-center"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
+            {/* Modal Internal Event Switcher Tabs (Swipe or Tap) */}
+            <div className="sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 py-2 bg-black/85 backdrop-blur-md border-b border-[#D4AF37]/35">
+              <div className="flex items-center gap-1 sm:gap-1.5">
+                {events.map((ev, i) => {
+                  const isCurrent = ev.name === activeModalEvent.name;
+                  return (
+                    <button
+                      key={ev.name}
+                      type="button"
+                      onClick={() => switchModalEvent(i)}
+                      className={`px-2.5 sm:px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-serif tracking-wider uppercase transition-all duration-300 font-semibold ${
+                        isCurrent
+                          ? 'bg-[#D4AF37] text-[#2A0810] shadow-[0_2px_8px_rgba(212,175,55,0.4)] scale-105'
+                          : 'text-white/70 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {ev.name}
+                    </button>
+                  );
+                })}
+              </div>
 
               {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setActiveModalEvent(null)}
                 aria-label="Close modal"
-                className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/20 transition-all hover:bg-black/80 hover:scale-105 active:scale-95"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
-
-              {/* Title & Tagline in Banner */}
-              <div className="absolute bottom-4 left-5 right-5 text-paper">
-                <span className="rounded-full bg-gold/90 px-3 py-0.5 font-serif text-[10px] uppercase tracking-[0.25em] text-[#2A0810] font-semibold">
-                  Celebration Details
-                </span>
-                <h3 className="mt-2 font-traditional italic text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
-                  {activeModalEvent.name}
-                </h3>
-                <p className="mt-1 font-title text-xs sm:text-sm text-paper/85">
-                  {activeModalEvent.tagline}
-                </p>
-              </div>
             </div>
 
-            {/* Modal Content Body */}
-            <div className="p-6 sm:p-7 space-y-5">
-              {/* Date & Time Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
-                    <Calendar className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Date</p>
-                    <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.day}</p>
-                  </div>
-                </div>
+            {/* Modal Content Container with Internal Swipe Animation */}
+            <div
+              key={activeModalEvent.name}
+              className={`transition-all duration-300 ${
+                modalSwipeDirection === 'right'
+                  ? 'animate-slide-in-right'
+                  : modalSwipeDirection === 'left'
+                  ? 'animate-slide-in-left'
+                  : ''
+              }`}
+            >
+              {/* Modal Header Banner Image */}
+              <div className="relative h-48 sm:h-56 w-full overflow-hidden">
+                <img
+                  src={activeModalEvent.image}
+                  alt={activeModalEvent.name}
+                  className="h-full w-full object-cover object-center"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
-                <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
-                    <Clock className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Time</p>
-                    <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.time}</p>
-                  </div>
-                </div>
-              </div>
+                {/* Left & Right Internal Swipe Arrow Controls */}
+                <button
+                  type="button"
+                  onClick={goToPrevModalEvent}
+                  aria-label="Previous celebration"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md border border-white/30 hover:bg-black/80 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={goToNextModalEvent}
+                  aria-label="Next celebration"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md border border-white/30 hover:bg-black/80 hover:scale-110 active:scale-95 transition-all shadow-lg"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
 
-              {/* Venue & Location */}
-              <div className="rounded-2xl border border-gold/30 bg-muted/40 p-4">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep mt-0.5">
-                    <MapPin className="h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Venue &amp; Location</p>
-                    <p className="font-display text-lg font-semibold text-foreground mt-0.5">
-                      {activeModalEvent.place}
-                    </p>
-                    {activeModalEvent.address && (
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        {activeModalEvent.address}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Fun Lines / Celebration Note */}
-              <div className="rounded-2xl border border-gold/25 bg-amber-50/40 p-4 text-center">
-                <p className="text-xs italic leading-relaxed text-foreground/90 font-serif">
-                  &ldquo;{activeModalEvent.funLines}&rdquo;
-                </p>
-              </div>
-
-              {/* Preferred Dress Code */}
-              <div className="flex items-center gap-3 rounded-2xl border border-gold/30 bg-muted/40 p-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
-                  <Shirt className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Preferred Dress Code</p>
-                  <p className="font-title text-xs sm:text-sm font-medium text-foreground mt-0.5">
-                    {activeModalEvent.dressCode}
+                {/* Title & Tagline in Banner */}
+                <div className="absolute bottom-4 left-5 right-5 text-paper">
+                  <span className="rounded-full bg-gold/90 px-3 py-0.5 font-serif text-[10px] uppercase tracking-[0.25em] text-[#2A0810] font-semibold">
+                    Celebration Details
+                  </span>
+                  <h3 className="mt-2 font-traditional italic text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
+                    {activeModalEvent.name}
+                  </h3>
+                  <p className="mt-1 font-title text-xs sm:text-sm text-paper/85">
+                    {activeModalEvent.tagline}
                   </p>
                 </div>
               </div>
 
-              {/* Get Directions Button */}
-              <a
-                href={activeModalEvent.mapsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#8B1E3F] via-[#A82548] to-[#8B1E3F] py-3.5 px-6 font-serif text-xs uppercase tracking-[0.25em] text-white shadow-lg border border-gold/40 transition-all duration-300 hover:from-[#A82548] hover:to-[#B83054] hover:shadow-xl active:scale-[0.98]"
-              >
-                <Navigation className="h-4 w-4" />
-                Get Directions on Google Maps
-              </a>
+              {/* Modal Content Body */}
+              <div className="p-6 sm:p-7 space-y-5">
+                {/* Date & Time Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
+                      <Calendar className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Date</p>
+                      <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.day}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
+                      <Clock className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Time</p>
+                      <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.time}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Venue & Location */}
+                <div className="rounded-2xl border border-gold/30 bg-muted/40 p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep mt-0.5">
+                      <MapPin className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Venue &amp; Location</p>
+                      <p className="font-display text-lg font-semibold text-foreground mt-0.5">
+                        {activeModalEvent.place}
+                      </p>
+                      {activeModalEvent.address && (
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                          {activeModalEvent.address}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fun Lines / Celebration Note */}
+                <div className="rounded-2xl border border-gold/25 bg-amber-50/40 p-4 text-center">
+                  <p className="text-xs italic leading-relaxed text-foreground/90 font-serif">
+                    &ldquo;{activeModalEvent.funLines}&rdquo;
+                  </p>
+                </div>
+
+                {/* Preferred Dress Code */}
+                <div className="flex items-center gap-3 rounded-2xl border border-gold/30 bg-muted/40 p-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
+                    <Shirt className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Preferred Dress Code</p>
+                    <p className="font-title text-xs sm:text-sm font-medium text-foreground mt-0.5">
+                      {activeModalEvent.dressCode}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Get Directions Button */}
+                <a
+                  href={activeModalEvent.mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#8B1E3F] via-[#A82548] to-[#8B1E3F] py-3.5 px-6 font-serif text-xs uppercase tracking-[0.25em] text-white shadow-lg border border-gold/40 transition-all duration-300 hover:from-[#A82548] hover:to-[#B83054] hover:shadow-xl active:scale-[0.98]"
+                >
+                  <Navigation className="h-4 w-4" />
+                  Get Directions on Google Maps
+                </a>
+              </div>
             </div>
           </div>
         </div>
