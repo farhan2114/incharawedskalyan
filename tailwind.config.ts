@@ -87,14 +87,14 @@ export default {
           '0%': { opacity: '0', transform: 'scale(0.94)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
-        'card-fold-in': {
+        'card-swipe-in': {
           '0%': {
             opacity: '0',
-            transform: 'perspective(1200px) translateY(50px) rotateX(-28deg) scale(0.92)',
+            transform: 'translate3d(0, 52px, 0) scale(0.95)',
           },
           '100%': {
             opacity: '1',
-            transform: 'perspective(1200px) translateY(0) rotateX(0deg) scale(1)',
+            transform: 'translate3d(0, 0, 0) scale(1)',
           },
         },
       },
@@ -107,6 +107,7 @@ export default {
         'fade-in': '0.2s ease-out forwards fade-in',
         'scale-up': '0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards scale-up',
         'card-fold-in': '0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards card-fold-in',
+        'card-swipe-in': '0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards card-swipe-in',
       },
     },
   },

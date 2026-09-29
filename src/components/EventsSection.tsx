@@ -151,8 +151,6 @@ export const EventsSection: React.FC = () => {
     }
   };
 
-  const [splashTheme, setSplashTheme] = useState<'haldi' | 'sangeet' | 'wedding' | null>(null);
-
   const triggerThemedSplash = (themeKey: string) => {
     if (themeKey === 'haldi') {
       const turmericColors = ['#FFB703', '#FB8500', '#F59E0B', '#EAB308', '#FDE047', '#FEF08A', '#D97706', '#FFFBEB', '#FFD700'];
@@ -359,13 +357,8 @@ export const EventsSection: React.FC = () => {
 
   const handleOpenEventModal = (event: EventItem) => {
     const themeKey = event.id || 'haldi';
-    setSplashTheme(themeKey as 'haldi' | 'sangeet' | 'wedding');
-
     triggerThemedSplash(themeKey);
-
-    // Show the unfolded 3D card immediately without sticky delay
     setActiveModalEvent(event);
-    setTimeout(() => setSplashTheme(null), 500);
   };
 
   // Close modal on Escape key
@@ -552,15 +545,21 @@ export const EventsSection: React.FC = () => {
                   isCenter ? 'hover:shadow-[0_24px_60px_rgba(212,175,55,0.45)]' : 'hover:opacity-75'
                 }`}
               >
-                {/* Full HD Background Image with Softened Opacity */}
+                {/* Dark Base Layer */}
+                <div className="absolute inset-0 bg-[#0D0205] z-0" />
+
+                {/* Full HD Background Image - Darker & Less Opaque */}
                 <img
                   src={event.image}
                   alt={event.name}
                   loading="eager"
                   decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-65 sm:opacity-75 transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-85"
+                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-35 sm:opacity-40 brightness-[0.72] contrast-[1.08] transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-45"
                   style={{ imageRendering: 'auto' }}
                 />
+
+                {/* Subtle dark vignette overlay to make the image darker and text pop */}
+                <div className="absolute inset-0 bg-black/35 pointer-events-none z-[5]" />
 
                 {/* Seamless Linear Gradient matching the background image from left to right */}
                 <div
@@ -654,39 +653,19 @@ export const EventsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Full-Screen Themed Splash Flash / Bloom */}
-      {splashTheme && (
-        <div
-          className={`fixed inset-0 z-[60] pointer-events-none transition-opacity duration-500 animate-fade-in ${
-            splashTheme === 'haldi'
-              ? 'bg-gradient-to-r from-amber-400/25 via-yellow-400/35 to-amber-500/25 backdrop-blur-[2px]'
-              : splashTheme === 'sangeet'
-              ? 'bg-gradient-to-r from-purple-600/25 via-fuchsia-500/35 to-pink-600/25 backdrop-blur-[2px]'
-              : 'bg-gradient-to-r from-rose-700/30 via-red-600/35 to-rose-900/30 backdrop-blur-[2px]'
-          }`}
-        />
-      )}
-
-      {/* Pop-up Modal Card with 3D Folding Entrance Animation */}
+      {/* Pop-up Modal Card with Smooth Card Swipe Entrance Animation */}
       {activeModalEvent && (
         <div
           onClick={() => setActiveModalEvent(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 sm:p-6 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
-          style={{ perspective: '1400px' }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 sm:p-6 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
         >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              transformOrigin: 'top center',
-              transformStyle: 'preserve-3d',
               willChange: 'transform, opacity',
-              backfaceVisibility: 'hidden',
-              WebkitBackfaceVisibility: 'hidden',
             }}
-            className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-[0_25px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(212,175,55,0.3)] animate-card-fold-in"
+            className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-[0_25px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(212,175,55,0.3)] animate-card-swipe-in"
           >
-            {/* 3D Folding Card Top Seam & Pull Tab */}
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 h-1.5 w-12 rounded-full bg-white/60 shadow-sm" />
             {/* Modal Header Banner Image */}
             <div className="relative h-48 sm:h-56 w-full overflow-hidden">
               <img
