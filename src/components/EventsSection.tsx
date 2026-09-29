@@ -33,6 +33,7 @@ interface EventItem {
 export const EventsSection: React.FC = () => {
   const [activeModalEvent, setActiveModalEvent] = useState<EventItem | null>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth < 640 : false);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
@@ -44,6 +45,17 @@ export const EventsSection: React.FC = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Automatic carousel rotation every 4.5 seconds (pauses on hover or when modal is open)
+  useEffect(() => {
+    if (isPaused || activeModalEvent) return;
+
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % 3);
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [isPaused, activeModalEvent]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -85,9 +97,9 @@ export const EventsSection: React.FC = () => {
     } else if (diff === -1) {
       return {
         transform: isMobile
-          ? 'translate(-50%, -50%) translate3d(-30%, 0, -70px) rotateY(18deg) scale(0.86)'
-          : 'translate(-50%, -50%) translate3d(-38%, 0, -140px) rotateY(24deg) scale(0.88)',
-        opacity: 0.45,
+          ? 'translate(-50%, -50%) translate3d(-26%, 0, -60px) rotateY(16deg) scale(0.88)'
+          : 'translate(-50%, -50%) translate3d(-34%, 0, -120px) rotateY(20deg) scale(0.90)',
+        opacity: 0.42,
         zIndex: 10,
         filter: 'blur(0.5px)',
         pointerEvents: 'auto' as const,
@@ -95,9 +107,9 @@ export const EventsSection: React.FC = () => {
     } else {
       return {
         transform: isMobile
-          ? 'translate(-50%, -50%) translate3d(30%, 0, -70px) rotateY(-18deg) scale(0.86)'
-          : 'translate(-50%, -50%) translate3d(38%, 0, -140px) rotateY(-24deg) scale(0.88)',
-        opacity: 0.45,
+          ? 'translate(-50%, -50%) translate3d(26%, 0, -60px) rotateY(-16deg) scale(0.88)'
+          : 'translate(-50%, -50%) translate3d(34%, 0, -120px) rotateY(-20deg) scale(0.90)',
+        opacity: 0.42,
         zIndex: 10,
         filter: 'blur(0.5px)',
         pointerEvents: 'auto' as const,
@@ -227,9 +239,17 @@ export const EventsSection: React.FC = () => {
 
         {/* 3D Wheel Carousel Stage */}
         <div
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          className="relative mt-8 sm:mt-10 h-[260px] xs:h-[280px] sm:h-[390px] md:h-[420px] w-full flex items-center justify-center select-none"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={(e) => {
+            setIsPaused(true);
+            handleTouchStart(e);
+          }}
+          onTouchEnd={(e) => {
+            setIsPaused(false);
+            handleTouchEnd(e);
+          }}
+          className="relative mt-8 sm:mt-10 h-[300px] xs:h-[330px] sm:h-[440px] md:h-[480px] w-full flex items-center justify-center select-none"
           style={{ perspective: '1200px', transformStyle: 'preserve-3d' }}
         >
           {/* Previous Card Navigation Button */}
@@ -274,17 +294,17 @@ export const EventsSection: React.FC = () => {
                   transition:
                     'transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.55s ease, filter 0.55s ease, box-shadow 0.55s ease',
                 }}
-                className={`group absolute top-1/2 left-1/2 w-[86%] xs:w-[84%] sm:w-[80%] md:w-[82%] max-w-4xl h-[220px] xs:h-[240px] sm:h-[350px] md:h-[380px] overflow-hidden rounded-[24px] sm:rounded-[36px] border-[2.5px] sm:border-[3px] border-[#D4AF37] ring-1 ring-[#FFF2B2]/60 shadow-[0_12px_36px_rgba(212,175,55,0.25)] cursor-pointer ${
-                  isCenter ? 'hover:shadow-[0_20px_50px_rgba(212,175,55,0.4)]' : 'hover:opacity-75'
+                className={`group absolute top-1/2 left-1/2 w-[92%] xs:w-[90%] sm:w-[86%] md:w-[88%] max-w-5xl h-[260px] xs:h-[290px] sm:h-[400px] md:h-[440px] overflow-hidden rounded-[24px] sm:rounded-[36px] border-[2.5px] sm:border-[3px] border-[#D4AF37] ring-1 ring-[#FFF2B2]/60 shadow-[0_16px_44px_rgba(212,175,55,0.28)] bg-[#1A050A] cursor-pointer ${
+                  isCenter ? 'hover:shadow-[0_24px_60px_rgba(212,175,55,0.45)]' : 'hover:opacity-75'
                 }`}
               >
-                {/* Full HD Pristine Background Image */}
+                {/* Full HD Background Image with Softened Opacity */}
                 <img
                   src={event.image}
                   alt={event.name}
                   loading="eager"
                   decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-65 sm:opacity-75 transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-85"
                   style={{ imageRendering: 'auto' }}
                 />
 
