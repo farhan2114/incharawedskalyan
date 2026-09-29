@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import confetti from 'canvas-confetti';
 import { weddingConfig } from '../wedding.config';
 import { RevealOnScroll } from './RevealOnScroll';
 import { SpinningMandala } from './Ornaments';
@@ -115,6 +116,189 @@ export const EventsSection: React.FC = () => {
         pointerEvents: 'auto' as const,
       };
     }
+  };
+
+  const [splashTheme, setSplashTheme] = useState<'haldi' | 'sangeet' | 'wedding' | null>(null);
+
+  const triggerThemedSplash = (themeKey: string, clientX?: number, clientY?: number) => {
+    const originX = clientX !== undefined ? clientX / window.innerWidth : 0.5;
+    const originY = clientY !== undefined ? clientY / window.innerHeight : 0.5;
+
+    if (themeKey === 'haldi') {
+      const turmericColors = ['#F59E0B', '#EAB308', '#FBBF24', '#D97706', '#FEF08A', '#CA8A04', '#FFD700', '#B45309', '#FFFBEB'];
+
+      // Wave 1: Huge High-Velocity Turmeric Powder Cloudburst
+      confetti({
+        particleCount: 190,
+        spread: 360,
+        startVelocity: 46,
+        ticks: 240,
+        gravity: 0.65,
+        origin: { x: originX, y: originY },
+        colors: turmericColors,
+        shapes: ['circle'],
+        scalar: 1.3,
+        zIndex: 99999,
+      });
+
+      // Wave 2: Lingering soft turmeric & marigold powder clouds
+      setTimeout(() => {
+        confetti({
+          particleCount: 130,
+          spread: 360,
+          startVelocity: 30,
+          ticks: 280,
+          gravity: 0.45,
+          origin: { x: originX, y: originY },
+          colors: ['#FBBF24', '#F59E0B', '#FEF3C7', '#D97706'],
+          shapes: ['circle', 'square'],
+          scalar: 1.8,
+          zIndex: 99999,
+        });
+      }, 100);
+
+      // Wave 3: Saffron & gold sparkle mist drifting
+      setTimeout(() => {
+        confetti({
+          particleCount: 90,
+          angle: 90,
+          spread: 140,
+          startVelocity: 36,
+          ticks: 300,
+          gravity: 0.4,
+          origin: { x: originX, y: originY },
+          colors: ['#FEF08A', '#FDE047', '#EAB308', '#FFFFFF'],
+          shapes: ['circle'],
+          scalar: 1.0,
+          zIndex: 99999,
+        });
+      }, 200);
+
+    } else if (themeKey === 'sangeet') {
+      const note1 = confetti.shapeFromText({ text: '♫', scalar: 2.2 });
+      const note2 = confetti.shapeFromText({ text: '♪', scalar: 2.2 });
+      const note3 = confetti.shapeFromText({ text: '♬', scalar: 2.2 });
+      const note4 = confetti.shapeFromText({ text: '♩', scalar: 2.2 });
+      const sparkle = confetti.shapeFromText({ text: '✨', scalar: 1.8 });
+
+      const musicalColors = ['#E11D48', '#C026D3', '#9333EA', '#F43F5E', '#F59E0B', '#FDE047', '#A855F7', '#38BDF8'];
+
+      // Wave 1: Musical Notes explosion across the screen
+      confetti({
+        particleCount: 95,
+        angle: 90,
+        spread: 180,
+        startVelocity: 48,
+        ticks: 260,
+        gravity: 0.55,
+        origin: { x: originX, y: originY },
+        colors: musicalColors,
+        shapes: [note1, note2, note3, note4, sparkle],
+        scalar: 2.1,
+        zIndex: 99999,
+      });
+
+      // Wave 2: Sparkling musical beats burst
+      setTimeout(() => {
+        confetti({
+          particleCount: 120,
+          spread: 360,
+          startVelocity: 34,
+          ticks: 240,
+          gravity: 0.6,
+          origin: { x: originX, y: originY },
+          colors: ['#FDE047', '#F472B6', '#C084FC', '#FFFFFF'],
+          shapes: ['circle', 'square'],
+          scalar: 1.2,
+          zIndex: 99999,
+        });
+      }, 110);
+
+      // Wave 3: High notes cascading down
+      setTimeout(() => {
+        confetti({
+          particleCount: 65,
+          spread: 360,
+          startVelocity: 26,
+          ticks: 300,
+          gravity: 0.42,
+          origin: { x: originX, y: Math.max(0.1, originY - 0.2) },
+          colors: musicalColors,
+          shapes: [note1, note2, note3],
+          scalar: 2.3,
+          zIndex: 99999,
+        });
+      }, 210);
+
+    } else {
+      // wedding: Rose petals shower
+      const rose1 = confetti.shapeFromText({ text: '🌹', scalar: 2.2 });
+      const rose2 = confetti.shapeFromText({ text: '🌸', scalar: 2.0 });
+      const petal = confetti.shapeFromText({ text: '🌺', scalar: 1.8 });
+
+      const roseColors = ['#991B1B', '#BE123C', '#E11D48', '#881337', '#FB7185', '#F43F5E', '#D4AF37', '#FFE4E6'];
+
+      // Wave 1: Full blossom rose petals explosion
+      confetti({
+        particleCount: 100,
+        spread: 360,
+        startVelocity: 42,
+        ticks: 300,
+        gravity: 0.45,
+        origin: { x: originX, y: originY },
+        colors: roseColors,
+        shapes: [rose1, rose2, petal],
+        scalar: 2.3,
+        zIndex: 99999,
+      });
+
+      // Wave 2: Crimson & gold petals showering from above
+      setTimeout(() => {
+        confetti({
+          particleCount: 150,
+          spread: 180,
+          startVelocity: 32,
+          ticks: 320,
+          gravity: 0.48,
+          origin: { x: originX, y: Math.max(0.05, originY - 0.25) },
+          colors: roseColors,
+          shapes: ['circle', rose1, rose2],
+          scalar: 1.7,
+          zIndex: 99999,
+        });
+      }, 120);
+
+      // Wave 3: Gentle romantic fluttering petals
+      setTimeout(() => {
+        confetti({
+          particleCount: 80,
+          spread: 360,
+          startVelocity: 24,
+          ticks: 340,
+          gravity: 0.38,
+          origin: { x: originX, y: originY },
+          colors: ['#FDA4AF', '#BE123C', '#D4AF37', '#FFF1F2'],
+          shapes: [rose2, 'circle'],
+          scalar: 1.5,
+          zIndex: 99999,
+        });
+      }, 230);
+    }
+  };
+
+  const handleOpenEventModal = (event: EventItem, e?: React.MouseEvent) => {
+    const themeKey = event.id || 'haldi';
+    setSplashTheme(themeKey as 'haldi' | 'sangeet' | 'wedding');
+
+    const clientX = e?.clientX;
+    const clientY = e?.clientY;
+    triggerThemedSplash(themeKey, clientX, clientY);
+
+    // Show the more detail card after the splash bursts across the screen
+    setTimeout(() => {
+      setActiveModalEvent(event);
+      setTimeout(() => setSplashTheme(null), 350);
+    }, 450);
   };
 
   // Close modal on Escape key
@@ -282,9 +466,9 @@ export const EventsSection: React.FC = () => {
             return (
               <div
                 key={event.name}
-                onClick={() => {
+                onClick={(e) => {
                   if (isCenter) {
-                    setActiveModalEvent(event);
+                    handleOpenEventModal(event, e);
                   } else {
                     setActiveIndex(idx);
                   }
@@ -357,7 +541,7 @@ export const EventsSection: React.FC = () => {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        setActiveModalEvent(event);
+                        handleOpenEventModal(event, e);
                       }}
                       aria-label={`View details for ${event.name}`}
                       className={`group/btn relative mt-1 sm:mt-2 flex h-10 w-10 xs:h-11 xs:w-11 sm:h-14 sm:w-14 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2px] sm:border-[2.5px] ${theme.btnRing} shadow-[0_4px_16px_rgba(0,0,0,0.28),0_0_12px_rgba(212,175,55,0.4)] ring-2 sm:ring-2 ring-gold/80 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold/90 group-hover:shadow-[0_6px_22px_rgba(0,0,0,0.35),0_0_24px_rgba(212,175,55,0.7)] active:scale-95`}
@@ -399,6 +583,19 @@ export const EventsSection: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Full-Screen Themed Splash Flash / Bloom */}
+      {splashTheme && (
+        <div
+          className={`fixed inset-0 z-[60] pointer-events-none transition-opacity duration-500 animate-fade-in ${
+            splashTheme === 'haldi'
+              ? 'bg-gradient-to-r from-amber-400/25 via-yellow-400/35 to-amber-500/25 backdrop-blur-[2px]'
+              : splashTheme === 'sangeet'
+              ? 'bg-gradient-to-r from-purple-600/25 via-fuchsia-500/35 to-pink-600/25 backdrop-blur-[2px]'
+              : 'bg-gradient-to-r from-rose-700/30 via-red-600/35 to-rose-900/30 backdrop-blur-[2px]'
+          }`}
+        />
+      )}
 
       {/* Pop-up Modal Card with Full Event Details & Directions */}
       {activeModalEvent && (
