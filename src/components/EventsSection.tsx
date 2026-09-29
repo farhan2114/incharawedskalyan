@@ -31,6 +31,42 @@ interface EventItem {
   dressCode: string;
 }
 
+// Lazy-cached confetti shapes to guarantee zero lag, zero flicker, and maximum performance
+let cachedMusicShapes: any[] | null = null;
+let cachedRoseShapes: any[] | null = null;
+
+const getCachedMusicShapes = () => {
+  if (!cachedMusicShapes && typeof window !== 'undefined') {
+    try {
+      cachedMusicShapes = [
+        confetti.shapeFromText({ text: '♫', scalar: 2.2 }),
+        confetti.shapeFromText({ text: '♪', scalar: 2.2 }),
+        confetti.shapeFromText({ text: '♬', scalar: 2.2 }),
+        confetti.shapeFromText({ text: '♩', scalar: 2.2 }),
+        confetti.shapeFromText({ text: '✨', scalar: 1.8 }),
+      ];
+    } catch {
+      cachedMusicShapes = ['circle', 'square'];
+    }
+  }
+  return cachedMusicShapes || ['circle', 'square'];
+};
+
+const getCachedRoseShapes = () => {
+  if (!cachedRoseShapes && typeof window !== 'undefined') {
+    try {
+      cachedRoseShapes = [
+        confetti.shapeFromText({ text: '🌹', scalar: 2.4 }),
+        confetti.shapeFromText({ text: '🌸', scalar: 2.2 }),
+        confetti.shapeFromText({ text: '🌺', scalar: 2.0 }),
+      ];
+    } catch {
+      cachedRoseShapes = ['circle'];
+    }
+  }
+  return cachedRoseShapes || ['circle'];
+};
+
 export const EventsSection: React.FC = () => {
   const [activeModalEvent, setActiveModalEvent] = useState<EventItem | null>(null);
   const [activeIndex, setActiveIndex] = useState<number>(0);
@@ -120,185 +156,221 @@ export const EventsSection: React.FC = () => {
 
   const [splashTheme, setSplashTheme] = useState<'haldi' | 'sangeet' | 'wedding' | null>(null);
 
-  const triggerThemedSplash = (themeKey: string, clientX?: number, clientY?: number) => {
-    const originX = clientX !== undefined ? clientX / window.innerWidth : 0.5;
-    const originY = clientY !== undefined ? clientY / window.innerHeight : 0.5;
-
+  const triggerThemedSplash = (themeKey: string) => {
     if (themeKey === 'haldi') {
-      const turmericColors = ['#F59E0B', '#EAB308', '#FBBF24', '#D97706', '#FEF08A', '#CA8A04', '#FFD700', '#B45309', '#FFFBEB'];
+      const turmericColors = ['#FFB703', '#FB8500', '#F59E0B', '#EAB308', '#FDE047', '#FEF08A', '#D97706', '#FFFBEB', '#FFD700'];
 
-      // Wave 1: Huge High-Velocity Turmeric Powder Cloudburst
+      // Center massive cloudburst
       confetti({
-        particleCount: 190,
+        particleCount: 160,
         spread: 360,
-        startVelocity: 46,
+        startVelocity: 48,
         ticks: 240,
         gravity: 0.65,
-        origin: { x: originX, y: originY },
+        origin: { x: 0.5, y: 0.45 },
         colors: turmericColors,
         shapes: ['circle'],
-        scalar: 1.3,
+        scalar: 1.35,
         zIndex: 99999,
+        disableForReducedMotion: true,
       });
 
-      // Wave 2: Lingering soft turmeric & marigold powder clouds
-      setTimeout(() => {
-        confetti({
-          particleCount: 130,
-          spread: 360,
-          startVelocity: 30,
-          ticks: 280,
-          gravity: 0.45,
-          origin: { x: originX, y: originY },
-          colors: ['#FBBF24', '#F59E0B', '#FEF3C7', '#D97706'],
-          shapes: ['circle', 'square'],
-          scalar: 1.8,
-          zIndex: 99999,
-        });
-      }, 100);
-
-      // Wave 3: Saffron & gold sparkle mist drifting
-      setTimeout(() => {
-        confetti({
-          particleCount: 90,
-          angle: 90,
-          spread: 140,
-          startVelocity: 36,
-          ticks: 300,
-          gravity: 0.4,
-          origin: { x: originX, y: originY },
-          colors: ['#FEF08A', '#FDE047', '#EAB308', '#FFFFFF'],
-          shapes: ['circle'],
-          scalar: 1.0,
-          zIndex: 99999,
-        });
-      }, 200);
-
-    } else if (themeKey === 'sangeet') {
-      const note1 = confetti.shapeFromText({ text: '♫', scalar: 2.2 });
-      const note2 = confetti.shapeFromText({ text: '♪', scalar: 2.2 });
-      const note3 = confetti.shapeFromText({ text: '♬', scalar: 2.2 });
-      const note4 = confetti.shapeFromText({ text: '♩', scalar: 2.2 });
-      const sparkle = confetti.shapeFromText({ text: '✨', scalar: 1.8 });
-
-      const musicalColors = ['#E11D48', '#C026D3', '#9333EA', '#F43F5E', '#F59E0B', '#FDE047', '#A855F7', '#38BDF8'];
-
-      // Wave 1: Musical Notes explosion across the screen
+      // Left edge cannon sweeping across full screen
       confetti({
-        particleCount: 95,
+        particleCount: 90,
+        angle: 60,
+        spread: 85,
+        startVelocity: 55,
+        ticks: 260,
+        gravity: 0.6,
+        origin: { x: 0.05, y: 0.65 },
+        colors: turmericColors,
+        shapes: ['circle'],
+        scalar: 1.2,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
+
+      // Right edge cannon sweeping across full screen
+      confetti({
+        particleCount: 90,
+        angle: 120,
+        spread: 85,
+        startVelocity: 55,
+        ticks: 260,
+        gravity: 0.6,
+        origin: { x: 0.95, y: 0.65 },
+        colors: turmericColors,
+        shapes: ['circle'],
+        scalar: 1.2,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
+
+      // Top cloud mist showering downwards
+      confetti({
+        particleCount: 80,
         angle: 90,
         spread: 180,
+        startVelocity: 25,
+        ticks: 280,
+        gravity: 0.45,
+        origin: { x: 0.5, y: 0.05 },
+        colors: ['#FEF08A', '#FDE047', '#EAB308', '#FFFFFF'],
+        shapes: ['circle'],
+        scalar: 1.6,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
+
+    } else if (themeKey === 'sangeet') {
+      const musicShapes = getCachedMusicShapes();
+      const musicalColors = ['#E11D48', '#C026D3', '#9333EA', '#F43F5E', '#F59E0B', '#FDE047', '#A855F7', '#38BDF8'];
+
+      // Center explosion of notes
+      confetti({
+        particleCount: 110,
+        spread: 360,
         startVelocity: 48,
         ticks: 260,
         gravity: 0.55,
-        origin: { x: originX, y: originY },
+        origin: { x: 0.5, y: 0.45 },
         colors: musicalColors,
-        shapes: [note1, note2, note3, note4, sparkle],
+        shapes: musicShapes,
         scalar: 2.1,
         zIndex: 99999,
+        disableForReducedMotion: true,
       });
 
-      // Wave 2: Sparkling musical beats burst
-      setTimeout(() => {
-        confetti({
-          particleCount: 120,
-          spread: 360,
-          startVelocity: 34,
-          ticks: 240,
-          gravity: 0.6,
-          origin: { x: originX, y: originY },
-          colors: ['#FDE047', '#F472B6', '#C084FC', '#FFFFFF'],
-          shapes: ['circle', 'square'],
-          scalar: 1.2,
-          zIndex: 99999,
-        });
-      }, 110);
+      // Left cannon notes sweeping right
+      confetti({
+        particleCount: 75,
+        angle: 60,
+        spread: 80,
+        startVelocity: 52,
+        ticks: 280,
+        gravity: 0.5,
+        origin: { x: 0.05, y: 0.7 },
+        colors: musicalColors,
+        shapes: musicShapes,
+        scalar: 2.0,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
 
-      // Wave 3: High notes cascading down
-      setTimeout(() => {
-        confetti({
-          particleCount: 65,
-          spread: 360,
-          startVelocity: 26,
-          ticks: 300,
-          gravity: 0.42,
-          origin: { x: originX, y: Math.max(0.1, originY - 0.2) },
-          colors: musicalColors,
-          shapes: [note1, note2, note3],
-          scalar: 2.3,
-          zIndex: 99999,
-        });
-      }, 210);
+      // Right cannon notes sweeping left
+      confetti({
+        particleCount: 75,
+        angle: 120,
+        spread: 80,
+        startVelocity: 52,
+        ticks: 280,
+        gravity: 0.5,
+        origin: { x: 0.95, y: 0.7 },
+        colors: musicalColors,
+        shapes: musicShapes,
+        scalar: 2.0,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
+
+      // Top sparkling beats cascading down
+      confetti({
+        particleCount: 70,
+        angle: 90,
+        spread: 180,
+        startVelocity: 30,
+        ticks: 300,
+        gravity: 0.42,
+        origin: { x: 0.5, y: 0.05 },
+        colors: ['#FDE047', '#F472B6', '#C084FC', '#FFFFFF'],
+        shapes: ['circle', 'square'],
+        scalar: 1.2,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
 
     } else {
-      // wedding: Rose petals shower
-      const rose1 = confetti.shapeFromText({ text: '🌹', scalar: 2.2 });
-      const rose2 = confetti.shapeFromText({ text: '🌸', scalar: 2.0 });
-      const petal = confetti.shapeFromText({ text: '🌺', scalar: 1.8 });
-
+      // wedding: Rose Petals Shower
+      const roseShapes = getCachedRoseShapes();
       const roseColors = ['#991B1B', '#BE123C', '#E11D48', '#881337', '#FB7185', '#F43F5E', '#D4AF37', '#FFE4E6'];
 
-      // Wave 1: Full blossom rose petals explosion
+      // Center explosion of petals
       confetti({
-        particleCount: 100,
+        particleCount: 110,
         spread: 360,
         startVelocity: 42,
         ticks: 300,
         gravity: 0.45,
-        origin: { x: originX, y: originY },
+        origin: { x: 0.5, y: 0.45 },
         colors: roseColors,
-        shapes: [rose1, rose2, petal],
+        shapes: roseShapes,
         scalar: 2.3,
         zIndex: 99999,
+        disableForReducedMotion: true,
       });
 
-      // Wave 2: Crimson & gold petals showering from above
-      setTimeout(() => {
-        confetti({
-          particleCount: 150,
-          spread: 180,
-          startVelocity: 32,
-          ticks: 320,
-          gravity: 0.48,
-          origin: { x: originX, y: Math.max(0.05, originY - 0.25) },
-          colors: roseColors,
-          shapes: ['circle', rose1, rose2],
-          scalar: 1.7,
-          zIndex: 99999,
-        });
-      }, 120);
+      // Left cannon rose petals
+      confetti({
+        particleCount: 80,
+        angle: 60,
+        spread: 80,
+        startVelocity: 50,
+        ticks: 320,
+        gravity: 0.45,
+        origin: { x: 0.05, y: 0.65 },
+        colors: roseColors,
+        shapes: roseShapes,
+        scalar: 2.1,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
 
-      // Wave 3: Gentle romantic fluttering petals
-      setTimeout(() => {
-        confetti({
-          particleCount: 80,
-          spread: 360,
-          startVelocity: 24,
-          ticks: 340,
-          gravity: 0.38,
-          origin: { x: originX, y: originY },
-          colors: ['#FDA4AF', '#BE123C', '#D4AF37', '#FFF1F2'],
-          shapes: [rose2, 'circle'],
-          scalar: 1.5,
-          zIndex: 99999,
-        });
-      }, 230);
+      // Right cannon rose petals
+      confetti({
+        particleCount: 80,
+        angle: 120,
+        spread: 80,
+        startVelocity: 50,
+        ticks: 320,
+        gravity: 0.45,
+        origin: { x: 0.95, y: 0.65 },
+        colors: roseColors,
+        shapes: roseShapes,
+        scalar: 2.1,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
+
+      // Top gentle curtain of rose petals raining down
+      confetti({
+        particleCount: 100,
+        angle: 90,
+        spread: 180,
+        startVelocity: 26,
+        ticks: 340,
+        gravity: 0.38,
+        origin: { x: 0.5, y: 0.0 },
+        colors: roseColors,
+        shapes: roseShapes,
+        scalar: 1.9,
+        zIndex: 99999,
+        disableForReducedMotion: true,
+      });
     }
   };
 
-  const handleOpenEventModal = (event: EventItem, e?: React.MouseEvent) => {
+  const handleOpenEventModal = (event: EventItem) => {
     const themeKey = event.id || 'haldi';
     setSplashTheme(themeKey as 'haldi' | 'sangeet' | 'wedding');
 
-    const clientX = e?.clientX;
-    const clientY = e?.clientY;
-    triggerThemedSplash(themeKey, clientX, clientY);
+    triggerThemedSplash(themeKey);
 
-    // Show the more detail card after the splash bursts across the screen
+    // Show the unfolded 3D card as the splash peaks across the screen
     setTimeout(() => {
       setActiveModalEvent(event);
       setTimeout(() => setSplashTheme(null), 350);
-    }, 450);
+    }, 380);
   };
 
   // Close modal on Escape key
@@ -466,9 +538,9 @@ export const EventsSection: React.FC = () => {
             return (
               <div
                 key={event.name}
-                onClick={(e) => {
+                onClick={() => {
                   if (isCenter) {
-                    handleOpenEventModal(event, e);
+                    handleOpenEventModal(event);
                   } else {
                     setActiveIndex(idx);
                   }
@@ -541,7 +613,7 @@ export const EventsSection: React.FC = () => {
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleOpenEventModal(event, e);
+                        handleOpenEventModal(event);
                       }}
                       aria-label={`View details for ${event.name}`}
                       className={`group/btn relative mt-1 sm:mt-2 flex h-10 w-10 xs:h-11 xs:w-11 sm:h-14 sm:w-14 items-center justify-center rounded-full ${theme.btnBg} ${theme.btnColor} border-[2px] sm:border-[2.5px] ${theme.btnRing} shadow-[0_4px_16px_rgba(0,0,0,0.28),0_0_12px_rgba(212,175,55,0.4)] ring-2 sm:ring-2 ring-gold/80 transition-all duration-300 group-hover:scale-110 group-hover:ring-4 group-hover:ring-gold/90 group-hover:shadow-[0_6px_22px_rgba(0,0,0,0.35),0_0_24px_rgba(212,175,55,0.7)] active:scale-95`}
@@ -597,16 +669,20 @@ export const EventsSection: React.FC = () => {
         />
       )}
 
-      {/* Pop-up Modal Card with Full Event Details & Directions */}
+      {/* Pop-up Modal Card with 3D Folding Entrance Animation */}
       {activeModalEvent && (
         <div
           onClick={() => setActiveModalEvent(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 sm:p-6 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 sm:p-6 backdrop-blur-md transition-opacity duration-300 animate-fade-in"
+          style={{ perspective: '1400px' }}
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-2xl transition-all duration-300 animate-scale-up"
+            style={{ transformOrigin: 'top center', transformStyle: 'preserve-3d' }}
+            className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-[0_25px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(212,175,55,0.3)] animate-card-fold-in"
           >
+            {/* 3D Folding Card Top Seam & Pull Tab */}
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 h-1.5 w-12 rounded-full bg-white/60 shadow-sm" />
             {/* Modal Header Banner Image */}
             <div className="relative h-48 sm:h-56 w-full overflow-hidden">
               <img

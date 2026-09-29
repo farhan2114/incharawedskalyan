@@ -87,6 +87,26 @@ export default {
           '0%': { opacity: '0', transform: 'scale(0.94)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
+        'card-fold-in': {
+          '0%': {
+            opacity: '0',
+            transform: 'perspective(1400px) translateY(80px) rotateX(-55deg) scale(0.85)',
+            filter: 'blur(3px)',
+          },
+          '65%': {
+            opacity: '1',
+            transform: 'perspective(1400px) translateY(-10px) rotateX(10deg) scale(1.02)',
+            filter: 'blur(0px)',
+          },
+          '82%': {
+            transform: 'perspective(1400px) translateY(4px) rotateX(-4deg) scale(0.995)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'perspective(1400px) translateY(0) rotateX(0deg) scale(1)',
+            filter: 'blur(0px)',
+          },
+        },
       },
       animation: {
         'float-slow': '7s ease-in-out infinite float-slow',
@@ -96,6 +116,7 @@ export default {
         'map-pulse': '2.4s ease-out infinite map-pulse',
         'fade-in': '0.2s ease-out forwards fade-in',
         'scale-up': '0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards scale-up',
+        'card-fold-in': '0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards card-fold-in',
       },
     },
   },
