@@ -4,7 +4,6 @@ import { HeroSection } from './components/HeroSection';
 import { IntroSection } from './components/IntroSection';
 import { ScratchCountdownSection } from './components/ScratchCountdownSection';
 import { MeetCoupleSection } from './components/MeetCoupleSection';
-import { GallerySection } from './components/GallerySection';
 import { ParallaxSection } from './components/ParallaxSection';
 import { EventsSection } from './components/EventsSection';
 import { VenueSection } from './components/VenueSection';
@@ -43,7 +42,6 @@ export const App: React.FC = () => {
       <IntroSection />
       <ScratchCountdownSection />
       <MeetCoupleSection />
-      <GallerySection />
       <ParallaxSection />
       <EventsSection />
       <VenueSection />
