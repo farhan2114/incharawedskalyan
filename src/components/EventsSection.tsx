@@ -55,10 +55,14 @@ const getCachedMusicShapes = () => {
 const getCachedRoseShapes = () => {
   if (!cachedRoseShapes && typeof window !== 'undefined') {
     try {
+      // Natural organic rose petal contours (no emojis)
+      const petalPath1 = 'M 10,0 C 26,10 24,36 10,40 C -4,36 -6,10 10,0 Z';
+      const petalPath2 = 'M 12,0 C 28,12 22,38 8,38 C -4,34 -2,12 12,0 Z';
+      const petalPath3 = 'M 10,2 C 20,8 24,24 18,34 C 12,42 6,40 2,34 C -4,26 0,8 10,2 Z';
       cachedRoseShapes = [
-        confetti.shapeFromText({ text: '🌹', scalar: 2.4 }),
-        confetti.shapeFromText({ text: '🌸', scalar: 2.2 }),
-        confetti.shapeFromText({ text: '🌺', scalar: 2.0 }),
+        confetti.shapeFromPath({ path: petalPath1 }),
+        confetti.shapeFromPath({ path: petalPath2 }),
+        confetti.shapeFromPath({ path: petalPath3 }),
       ];
     } catch {
       cachedRoseShapes = ['circle'];
@@ -117,68 +121,6 @@ export const EventsSection: React.FC = () => {
 
   const nextEvent = () => setActiveIndex((prev) => (prev + 1) % 3);
   const prevEvent = () => setActiveIndex((prev) => (prev - 1 + 3) % 3);
-
-  const [modalSwipeDirection, setModalSwipeDirection] = useState<'left' | 'right' | null>(null);
-  const modalTouchStartX = useRef<number | null>(null);
-  const modalTouchStartY = useRef<number | null>(null);
-
-  const handleModalTouchStart = (e: React.TouchEvent) => {
-    modalTouchStartX.current = e.touches[0].clientX;
-    modalTouchStartY.current = e.touches[0].clientY;
-  };
-
-  const handleModalTouchEnd = (e: React.TouchEvent) => {
-    if (modalTouchStartX.current === null || modalTouchStartY.current === null || !activeModalEvent) return;
-    const deltaX = e.changedTouches[0].clientX - modalTouchStartX.current;
-    const deltaY = e.changedTouches[0].clientY - modalTouchStartY.current;
-
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX < 0) {
-        goToNextModalEvent();
-      } else {
-        goToPrevModalEvent();
-      }
-    }
-    modalTouchStartX.current = null;
-    modalTouchStartY.current = null;
-  };
-
-  const goToNextModalEvent = () => {
-    if (!activeModalEvent) return;
-    const currentIdx = events.findIndex((e) => e.name === activeModalEvent.name);
-    const nextIdx = (currentIdx + 1) % events.length;
-    const nextEv = events[nextIdx];
-    setModalSwipeDirection('right');
-    setActiveModalEvent(nextEv);
-    setActiveIndex(nextIdx);
-    triggerThemedSplash(nextEv.id || 'haldi');
-    setTimeout(() => setModalSwipeDirection(null), 300);
-  };
-
-  const goToPrevModalEvent = () => {
-    if (!activeModalEvent) return;
-    const currentIdx = events.findIndex((e) => e.name === activeModalEvent.name);
-    const prevIdx = (currentIdx - 1 + events.length) % events.length;
-    const prevEv = events[prevIdx];
-    setModalSwipeDirection('left');
-    setActiveModalEvent(prevEv);
-    setActiveIndex(prevIdx);
-    triggerThemedSplash(prevEv.id || 'haldi');
-    setTimeout(() => setModalSwipeDirection(null), 300);
-  };
-
-  const switchModalEvent = (targetIdx: number) => {
-    if (!activeModalEvent) return;
-    const currentIdx = events.findIndex((e) => e.name === activeModalEvent.name);
-    if (currentIdx === targetIdx) return;
-    const dir = targetIdx > currentIdx ? 'right' : 'left';
-    const nextEv = events[targetIdx];
-    setModalSwipeDirection(dir);
-    setActiveModalEvent(nextEv);
-    setActiveIndex(targetIdx);
-    triggerThemedSplash(nextEv.id || 'haldi');
-    setTimeout(() => setModalSwipeDirection(null), 300);
-  };
 
   const getCardTransform = (idx: number, total: number) => {
     let diff = idx - activeIndex;
@@ -658,21 +600,15 @@ export const EventsSection: React.FC = () => {
                   isCenter ? 'hover:shadow-[0_24px_60px_rgba(212,175,55,0.45)]' : 'hover:opacity-75'
                 }`}
               >
-                {/* Dark Base Layer */}
-                <div className="absolute inset-0 bg-[#080103] z-0" />
-
-                {/* Full HD Background Image - Darkened with Higher Opacity */}
+                {/* Full HD Background Image - Crystal Clear */}
                 <img
                   src={event.image}
                   alt={event.name}
                   loading="eager"
                   decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-75 sm:opacity-85 brightness-[0.40] contrast-[1.18] transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-95"
+                  className="absolute inset-0 h-full w-full object-cover object-right sm:object-center opacity-90 sm:opacity-95 transition-all duration-700 ease-out group-hover:scale-105 group-hover:opacity-100"
                   style={{ imageRendering: 'auto' }}
                 />
-
-                {/* Subtle dark vignette overlay to make the image darker and text pop */}
-                <div className="absolute inset-0 bg-black/45 pointer-events-none z-[5]" />
 
                 {/* Seamless Linear Gradient matching the background image from left to right */}
                 <div
@@ -774,174 +710,119 @@ export const EventsSection: React.FC = () => {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            onTouchStart={handleModalTouchStart}
-            onTouchEnd={handleModalTouchEnd}
             style={{
               willChange: 'transform, opacity',
             }}
             className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[28px] border-2 border-[#D4AF37] bg-card text-card-foreground shadow-[0_25px_70px_rgba(0,0,0,0.6),0_0_40px_rgba(212,175,55,0.3)] animate-card-swipe-in"
           >
-            {/* Modal Internal Event Switcher Tabs (Swipe or Tap) */}
-            <div className="sticky top-0 z-40 flex items-center justify-between px-3 sm:px-4 py-2 bg-black/85 backdrop-blur-md border-b border-[#D4AF37]/35">
-              <div className="flex items-center gap-1 sm:gap-1.5">
-                {events.map((ev, i) => {
-                  const isCurrent = ev.name === activeModalEvent.name;
-                  return (
-                    <button
-                      key={ev.name}
-                      type="button"
-                      onClick={() => switchModalEvent(i)}
-                      className={`px-2.5 sm:px-3.5 py-1 rounded-full text-[10px] sm:text-xs font-serif tracking-wider uppercase transition-all duration-300 font-semibold ${
-                        isCurrent
-                          ? 'bg-[#D4AF37] text-[#2A0810] shadow-[0_2px_8px_rgba(212,175,55,0.4)] scale-105'
-                          : 'text-white/70 hover:text-white hover:bg-white/10'
-                      }`}
-                    >
-                      {ev.name}
-                    </button>
-                  );
-                })}
-              </div>
+            {/* Modal Header Banner Image */}
+            <div className="relative h-48 sm:h-56 w-full overflow-hidden">
+              <img
+                src={activeModalEvent.image}
+                alt={activeModalEvent.name}
+                className="h-full w-full object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
 
               {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setActiveModalEvent(null)}
                 aria-label="Close modal"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all active:scale-95"
+                className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/60 text-white backdrop-blur-md border border-white/20 transition-all hover:bg-black/80 hover:scale-105 active:scale-95"
               >
-                <X className="h-4 w-4" />
+                <X className="h-5 w-5" />
               </button>
+
+              {/* Title & Tagline in Banner */}
+              <div className="absolute bottom-4 left-5 right-5 text-paper">
+                <span className="rounded-full bg-gold/90 px-3 py-0.5 font-serif text-[10px] uppercase tracking-[0.25em] text-[#2A0810] font-semibold">
+                  Celebration Details
+                </span>
+                <h3 className="mt-2 font-traditional italic text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
+                  {activeModalEvent.name}
+                </h3>
+                <p className="mt-1 font-title text-xs sm:text-sm text-paper/85">
+                  {activeModalEvent.tagline}
+                </p>
+              </div>
             </div>
 
-            {/* Modal Content Container with Internal Swipe Animation */}
-            <div
-              key={activeModalEvent.name}
-              className={`transition-all duration-300 ${
-                modalSwipeDirection === 'right'
-                  ? 'animate-slide-in-right'
-                  : modalSwipeDirection === 'left'
-                  ? 'animate-slide-in-left'
-                  : ''
-              }`}
-            >
-              {/* Modal Header Banner Image */}
-              <div className="relative h-48 sm:h-56 w-full overflow-hidden">
-                <img
-                  src={activeModalEvent.image}
-                  alt={activeModalEvent.name}
-                  className="h-full w-full object-cover object-center"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent" />
-
-                {/* Left & Right Internal Swipe Arrow Controls */}
-                <button
-                  type="button"
-                  onClick={goToPrevModalEvent}
-                  aria-label="Previous celebration"
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md border border-white/30 hover:bg-black/80 hover:scale-110 active:scale-95 transition-all shadow-lg"
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={goToNextModalEvent}
-                  aria-label="Next celebration"
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white backdrop-blur-md border border-white/30 hover:bg-black/80 hover:scale-110 active:scale-95 transition-all shadow-lg"
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </button>
-
-                {/* Title & Tagline in Banner */}
-                <div className="absolute bottom-4 left-5 right-5 text-paper">
-                  <span className="rounded-full bg-gold/90 px-3 py-0.5 font-serif text-[10px] uppercase tracking-[0.25em] text-[#2A0810] font-semibold">
-                    Celebration Details
-                  </span>
-                  <h3 className="mt-2 font-traditional italic text-3xl sm:text-4xl font-bold tracking-tight text-white drop-shadow-md">
-                    {activeModalEvent.name}
-                  </h3>
-                  <p className="mt-1 font-title text-xs sm:text-sm text-paper/85">
-                    {activeModalEvent.tagline}
-                  </p>
-                </div>
-              </div>
-
-              {/* Modal Content Body */}
-              <div className="p-6 sm:p-7 space-y-5">
-                {/* Date & Time Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
-                      <Calendar className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Date</p>
-                      <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.day}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
-                      <Clock className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Time</p>
-                      <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.time}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Venue & Location */}
-                <div className="rounded-2xl border border-gold/30 bg-muted/40 p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep mt-0.5">
-                      <MapPin className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Venue &amp; Location</p>
-                      <p className="font-display text-lg font-semibold text-foreground mt-0.5">
-                        {activeModalEvent.place}
-                      </p>
-                      {activeModalEvent.address && (
-                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                          {activeModalEvent.address}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fun Lines / Celebration Note */}
-                <div className="rounded-2xl border border-gold/25 bg-amber-50/40 p-4 text-center">
-                  <p className="text-xs italic leading-relaxed text-foreground/90 font-serif">
-                    &ldquo;{activeModalEvent.funLines}&rdquo;
-                  </p>
-                </div>
-
-                {/* Preferred Dress Code */}
-                <div className="flex items-center gap-3 rounded-2xl border border-gold/30 bg-muted/40 p-4">
+            {/* Modal Content Body */}
+            <div className="p-6 sm:p-7 space-y-5">
+              {/* Date & Time Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
-                    <Shirt className="h-4 w-4" />
+                    <Calendar className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Preferred Dress Code</p>
-                    <p className="font-title text-xs sm:text-sm font-medium text-foreground mt-0.5">
-                      {activeModalEvent.dressCode}
-                    </p>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Date</p>
+                    <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.day}</p>
                   </div>
                 </div>
 
-                {/* Get Directions Button */}
-                <a
-                  href={activeModalEvent.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#8B1E3F] via-[#A82548] to-[#8B1E3F] py-3.5 px-6 font-serif text-xs uppercase tracking-[0.25em] text-white shadow-lg border border-gold/40 transition-all duration-300 hover:from-[#A82548] hover:to-[#B83054] hover:shadow-xl active:scale-[0.98]"
-                >
-                  <Navigation className="h-4 w-4" />
-                  Get Directions on Google Maps
-                </a>
+                <div className="flex items-center gap-3 rounded-xl border border-gold/30 bg-muted/50 p-3.5">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
+                    <Clock className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Time</p>
+                    <p className="font-title text-sm font-semibold text-foreground">{activeModalEvent.time}</p>
+                  </div>
+                </div>
               </div>
+
+              {/* Venue & Location */}
+              <div className="rounded-2xl border border-gold/30 bg-muted/40 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep mt-0.5">
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Venue &amp; Location</p>
+                    <p className="font-display text-lg font-semibold text-foreground mt-0.5">
+                      {activeModalEvent.place}
+                    </p>
+                    {activeModalEvent.address && (
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        {activeModalEvent.address}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Fun Lines / Celebration Note */}
+              <div className="rounded-2xl border border-gold/25 bg-amber-50/40 p-4 text-center">
+                <p className="text-xs italic leading-relaxed text-foreground/90 font-serif">
+                  &ldquo;{activeModalEvent.funLines}&rdquo;
+                </p>
+              </div>
+
+              {/* Preferred Dress Code */}
+              <div className="flex items-center gap-3 rounded-2xl border border-gold/30 bg-muted/40 p-4">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold-deep">
+                  <Shirt className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Preferred Dress Code</p>
+                  <p className="font-title text-xs sm:text-sm font-medium text-foreground mt-0.5">
+                    {activeModalEvent.dressCode}
+                  </p>
+                </div>
+              </div>
+
+              {/* Get Directions Button */}
+              <a
+                href={activeModalEvent.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#8B1E3F] via-[#A82548] to-[#8B1E3F] py-3.5 px-6 font-serif text-xs uppercase tracking-[0.25em] text-white shadow-lg border border-gold/40 transition-all duration-300 hover:from-[#A82548] hover:to-[#B83054] hover:shadow-xl active:scale-[0.98]"
+              >
+                <Navigation className="h-4 w-4" />
+                Get Directions on Google Maps
+              </a>
             </div>
           </div>
         </div>
