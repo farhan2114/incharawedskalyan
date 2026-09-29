@@ -89,12 +89,8 @@ export default {
         },
         'card-swipe-in': {
           '0%': {
-            opacity: '0.5',
-            transform: 'translate3d(0, 65vh, 0) scale(0.92)',
-          },
-          '65%': {
-            opacity: '1',
-            transform: 'translate3d(0, -8px, 0) scale(1.01)',
+            opacity: '0',
+            transform: 'translate3d(0, 36px, 0) scale(0.96)',
           },
           '100%': {
             opacity: '1',

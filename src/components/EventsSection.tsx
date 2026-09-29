@@ -38,12 +38,18 @@ let cachedRoseShapes: any[] | null = null;
 const getCachedMusicShapes = () => {
   if (!cachedMusicShapes && typeof window !== 'undefined') {
     try {
+      // Natural SVG vector paths for musical notes & stars (super smooth 60fps, zero bitmap flicker)
+      // Single eighth note (♪)
+      const notePath1 = 'M 9,22 C 6.5,22 4.5,20 4.5,17.5 C 4.5,15 6.5,13 9,13 C 9.8,13 10.5,13.2 11,13.6 L 11,4 C 11,4 15,3 18,6 C 15,7.5 13,8.5 13,11 L 13,17.5 C 13,20 11,22 9,22 Z';
+      // Beamed double notes (♫)
+      const notePath2 = 'M 6,22 C 4,22 2.5,20.5 2.5,18.5 C 2.5,16.5 4,15 6,15 C 6.8,15 7.5,15.3 8,15.7 L 8,5 L 19,2.5 L 19,16 C 17,16 15.5,17.5 15.5,19.5 C 15.5,21.5 17,23 19,23 C 20.5,23 21.8,22 22,20.5 L 22,5.5 L 10,8 L 10,18.5 C 10,20.5 8,22 6,22 Z';
+      // Sparkle star (✦)
+      const starPath = 'M 10,0 L 12.5,7.5 L 20,10 L 12.5,12.5 L 10,20 L 7.5,12.5 L 0,10 L 7.5,7.5 Z';
+
       cachedMusicShapes = [
-        confetti.shapeFromText({ text: '♫', scalar: 2.2 }),
-        confetti.shapeFromText({ text: '♪', scalar: 2.2 }),
-        confetti.shapeFromText({ text: '♬', scalar: 2.2 }),
-        confetti.shapeFromText({ text: '♩', scalar: 2.2 }),
-        confetti.shapeFromText({ text: '✨', scalar: 1.8 }),
+        confetti.shapeFromPath({ path: notePath1 }),
+        confetti.shapeFromPath({ path: notePath2 }),
+        confetti.shapeFromPath({ path: starPath }),
       ];
     } catch {
       cachedMusicShapes = ['circle', 'square'];
@@ -411,6 +417,10 @@ export const EventsSection: React.FC = () => {
   };
 
   const handleOpenEventModal = (event: EventItem) => {
+    const idx = events.findIndex((e) => e.name === event.name);
+    if (idx !== -1) {
+      setActiveIndex(idx);
+    }
     const themeKey = event.id || 'haldi';
     triggerThemedSplash(themeKey);
     setActiveModalEvent(event);
@@ -470,11 +480,9 @@ export const EventsSection: React.FC = () => {
       btnRing: 'ring-[#D4AF37] border-[#FFF4D0]',
       btnColor: 'text-[#FFF4D0]',
       topIcon: (
-        <div className="flex items-center justify-center gap-1 sm:gap-1.5 text-[#F5DE98] text-base sm:text-2xl font-bold tracking-widest drop-shadow">
-          <span>♫</span>
-          <span className="text-xs sm:text-lg">♪</span>
-          <span>♬</span>
-        </div>
+        <svg className="w-6 h-6 sm:w-9 sm:h-9 text-[#F5DE98] drop-shadow" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+        </svg>
       ),
     },
     wedding: {
