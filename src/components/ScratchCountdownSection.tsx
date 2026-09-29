@@ -180,15 +180,11 @@ export const ScratchCountdownSection: React.FC = () => {
     strokeCounterRef.current = 0;
   }, []);
 
-  // Check stored reveal state and handle mobile-friendly resize
+  // Initialize canvas and handle mobile-friendly resize (scratch resets on reload, but stays revealed during scroll)
   useEffect(() => {
+    // Clear any previous persistent state so scratch card resets on page reload
     try {
-      if (localStorage.getItem('inchara_kalyan_countdown_revealed') === 'true') {
-        hasRevealedRef.current = true;
-        setIsRevealed(true);
-        setScratchProgress(100);
-        return;
-      }
+      localStorage.removeItem('inchara_kalyan_countdown_revealed');
     } catch {}
 
     const timer = setTimeout(initCanvas, 150);
@@ -245,9 +241,6 @@ export const ScratchCountdownSection: React.FC = () => {
     if (pct >= 42 && !hasRevealedRef.current) {
       hasRevealedRef.current = true;
       setIsRevealed(true);
-      try {
-        localStorage.setItem('inchara_kalyan_countdown_revealed', 'true');
-      } catch {}
       triggerCenterConfetti();
     }
   };
@@ -377,9 +370,6 @@ export const ScratchCountdownSection: React.FC = () => {
     hasRevealedRef.current = true;
     setIsRevealed(true);
     setScratchProgress(100);
-    try {
-      localStorage.setItem('inchara_kalyan_countdown_revealed', 'true');
-    } catch {}
     triggerCenterConfetti();
   };
 
@@ -387,9 +377,6 @@ export const ScratchCountdownSection: React.FC = () => {
     hasRevealedRef.current = false;
     isScratchingRef.current = false;
     lastPointRef.current = null;
-    try {
-      localStorage.removeItem('inchara_kalyan_countdown_revealed');
-    } catch {}
     setIsRevealed(false);
     setScratchProgress(0);
     setTimeout(initCanvas, 50);
